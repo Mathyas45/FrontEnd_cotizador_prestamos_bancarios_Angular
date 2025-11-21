@@ -1,0 +1,26 @@
+### Angular ###
+node_modules/
+dist/
+tmp/
+out-tsc/
+
+### IDE ###
+.vscode/
+.idea/
+
+### Logs ###
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+### Env files ###
+.env
+.env.local
+.env.prod
+.env.dev
+
+### OS ###
+.DS_Store
+Thumbs.db
+### archivos .md ###
+*.md

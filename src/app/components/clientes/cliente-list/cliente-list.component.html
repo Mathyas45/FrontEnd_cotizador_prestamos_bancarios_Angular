@@ -1,0 +1,317 @@
+<!--
+  ============================================
+  VISTA: LISTADO DE CLIENTES
+  ============================================
+  
+  Esta es la vista del listado de clientes.
+  Muestra:
+  - Header con título y botón de crear
+  - Barra de búsqueda
+  - Tabla responsive con los clientes
+  - Acciones: Editar y Eliminar
+  - Estados de carga y error
+  
+  DIRECTIVAS DE ANGULAR (similares a Vue):
+  - *ngIf → Equivalente a v-if
+  - *ngFor → Equivalente a v-for
+  - (click) → Equivalente a @click
+  - [(ngModel)] → Equivalente a v-model
+  - [class] → Binding de clases
+  - {{ }} → Interpolación de datos
+-->
+
+<div class="container-fluid">
+  
+  <!-- ========================================
+       HEADER: TÍTULO Y BOTÓN CREAR
+       ======================================== -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <!-- Componente Card de la plantilla Cuba -->
+      <app-card 
+        [title]="'Gestión de Clientes'"
+        [headerClass]="'border-b pb-3'">
+        
+        <!-- Slot del contenido de la tarjeta -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          
+          <!-- Descripción -->
+          <div>
+            <p class="text-gray-600">
+              Administra todos los clientes de tu sistema. Puedes crear, editar y eliminar clientes.
+            </p>
+          </div>
+
+          <!-- Botón Crear Cliente -->
+          <button 
+            (click)="openCreateModal()"
+            class="btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+            Nuevo Cliente
+          </button>
+        </div>
+
+      </app-card>
+    </div>
+  </div>
+
+  <!-- ========================================
+       BARRA DE BÚSQUEDA
+       ======================================== -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <app-card>
+        <div class="mb-3">
+          <label for="searchInput" class="form-label">Buscar Cliente</label>
+          <input 
+            id="searchInput"
+            type="text"
+            [(ngModel)]="searchTerm"
+            (input)="filterClientes()"
+            placeholder="Buscar por nombre, documento o email..."
+            class="form-control"
+          />
+        </div>
+
+        <!-- Contador de resultados -->
+        <div class="f-light">
+          Mostrando {{ clientesFiltrados.length }} de {{ clientes.length }} clientes
+        </div>
+      </app-card>
+    </div>
+  </div>
+
+  <!-- ========================================
+       ESTADO: CARGANDO
+       ======================================== -->
+  <div *ngIf="isLoading" class="row">
+    <div class="col-12">
+      <app-card>
+        <div class="flex flex-col items-center justify-center py-12">
+          <!-- Spinner de carga -->
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+          <p class="text-gray-600">Cargando clientes...</p>
+        </div>
+      </app-card>
+    </div>
+  </div>
+
+  <!-- ========================================
+       ESTADO: ERROR
+       ======================================== -->
+  <div *ngIf="hasError && !isLoading" class="row">
+    <div class="col-12">
+      <app-card>
+        <div class="flex flex-col items-center justify-center py-12">
+          <!-- Ícono de error -->
+          <svg class="w-16 h-16 text-red-500 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">Error al cargar clientes</h3>
+          <p class="text-gray-600 mb-4">{{ errorMessage }}</p>
+          <button 
+            (click)="loadClientes()"
+            class="btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg">
+            Reintentar
+          </button>
+        </div>
+      </app-card>
+    </div>
+  </div>
+
+  <!-- ========================================
+       TABLA DE CLIENTES
+       ======================================== -->
+  <div *ngIf="!isLoading && !hasError" class="row">
+    <div class="col-12">
+      <app-card [padding]="false">
+        
+        <!-- Tabla responsive con clases nativas Cuba -->
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="table">
+            
+            <!-- ENCABEZADO -->
+            <thead class="bg-light">
+              <tr>
+                <th scope="col">Cliente</th>
+                <th scope="col">Documento</th>
+                <th scope="col">Contacto</th>
+                <th scope="col">Ingreso Mensual</th>
+                <th scope="col">Estado</th>
+                <th scope="col" class="text-center">Acciones</th>
+              </tr>
+            </thead>
+
+            <!-- CUERPO DE LA TABLA -->
+            <tbody>
+              
+              <!-- *ngFor: Itera sobre cada cliente -->
+              <tr *ngFor="let cliente of clientesFiltrados">
+                
+                <!-- COLUMNA: NOMBRE COMPLETO -->
+                <td>
+                  <div class="d-flex align-items-center gap-3">
+                    <!-- Avatar con iniciales -->
+                    <div>
+                      <div class="fw-medium">
+                        {{ cliente.nombreCompleto }}
+                      </div>
+                      <div class="f-light small text-muted">
+                        {{ cliente.email }}
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <!-- COLUMNA: DOCUMENTO -->
+                <td>
+                  <div class="fw-medium">
+                    {{ cliente.documentoIdentidad }}
+                  </div>
+                  <div class="f-light small">
+                    {{ cliente.documentoIdentidad && cliente.documentoIdentidad.length === 8 ? 'DNI' : cliente.documentoIdentidad && cliente.documentoIdentidad.length === 11 ? 'RUC' : 'Otro' }}
+                  </div>
+                </td>
+
+                <!-- COLUMNA: CONTACTO -->
+                <td>
+                  <div class="f-light small">
+                    {{ cliente.telefono || 'No registrado' }}
+                  </div>
+                </td>
+
+                <!-- COLUMNA: INGRESO MENSUAL -->
+                <td>
+                  <div class="fw-medium">
+                    {{ cliente.ingresoMensual ? (cliente.ingresoMensual | currency: 'S/ ') : 'No registrado' }}
+                  </div>
+                </td>
+
+                <!-- COLUMNA: ESTADO -->
+                <td>
+                  <span 
+                    [class]="'badge ' + getEstadoClass(cliente.regEstado)">
+                    {{ cliente.regEstado === 1 ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </td>
+
+                <!-- COLUMNA: ACCIONES -->
+                <td class="text-center">
+                  <div class="d-flex gap-2 justify-content-center">
+                    
+                    <!-- Botón Editar -->
+                    <button
+                      *ngIf="cliente.id"
+                      (click)="openEditModal(cliente.id)"
+                      title="Editar cliente"
+                      class="btn btn-sm btn-primary">
+                      <i class="fa fa-edit"></i>
+                    </button>
+
+                    <!-- Botón Eliminar -->
+                    <button
+                      (click)="deleteCliente(cliente)"
+                      title="Eliminar cliente"
+                      class="btn btn-sm btn-danger">
+                      <i class="fa fa-trash"></i>
+                    </button>
+
+                  </div>
+                </td>
+
+              </tr>
+
+              <!-- ESTADO: SIN RESULTADOS -->
+              <tr *ngIf="clientesFiltrados.length === 0">
+                <td colspan="6" class="text-center py-4">
+                  <div class="d-flex flex-column align-items-center">
+                    <svg class="mb-3" width="64" height="64" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                    </svg>
+                    <h5 class="fw-semibold mb-2">No hay clientes</h5>
+                    <p class="f-light mb-3">
+                      {{ searchTerm ? 'No se encontraron resultados para "' + searchTerm + '"' : 'Aún no has agregado clientes' }}
+                    </p>
+                    <button 
+                      *ngIf="!searchTerm"
+                      (click)="openCreateModal()"
+                      class="btn btn-primary">
+                      Crear Primer Cliente
+                    </button>
+                  </div>
+                </td>
+              </tr>
+
+            </tbody>
+          </table>
+        </div>
+
+      </app-card>
+    </div>
+  </div>
+
+</div>
+
+<!-- ========================================
+     MODAL DEL FORMULARIO (BOOTSTRAP)
+     ======================================== -->
+<div 
+  *ngIf="showModal" 
+  class="modal fade show d-block"
+  tabindex="-1"
+  style="background-color: rgba(0, 0, 0, 0.5);"
+  (click)="closeModal()">
+  
+  <div 
+    class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable"
+    (click)="$event.stopPropagation()">
+    
+    <div class="modal-content">
+      
+      <!-- Header del Modal -->
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ selectedClienteId ? 'Editar Cliente' : 'Nuevo Cliente' }}
+        </h5>
+        <button 
+          type="button"
+          class="btn-close"
+          (click)="closeModal()">
+        </button>
+      </div>
+
+      <!-- Formulario -->
+      <div class="modal-body">
+        <app-cliente-form
+          #clienteFormComponent
+          [clienteId]="selectedClienteId"
+          [isModal]="true"
+          (onSaved)="onClienteSaved()"
+          (onCancelEvent)="closeModal()">
+        </app-cliente-form>
+      </div>
+
+      <!-- Footer del Modal -->
+      <div class="modal-footer">
+        <button 
+          type="button" 
+          class="btn btn-light" 
+          (click)="closeModal()">
+          Cancelar
+        </button>
+        <button 
+          type="button" 
+          class="btn btn-primary" 
+          (click)="submitForm()"
+          [disabled]="isFormInvalid() || isFormSubmitting()">
+          <span *ngIf="isFormSubmitting()" class="spinner-border spinner-border-sm me-2" role="status"></span>
+          <i *ngIf="!isFormSubmitting()" class="fa fa-save me-1"></i>
+          {{ isFormSubmitting() ? 'Guardando...' : (selectedClienteId ? 'Actualizar Cliente' : 'Crear Cliente') }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>

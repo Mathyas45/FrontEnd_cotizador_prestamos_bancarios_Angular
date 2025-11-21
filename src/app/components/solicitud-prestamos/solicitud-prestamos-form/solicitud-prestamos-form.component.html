@@ -1,0 +1,119 @@
+<div class="card-body card-wrapper input-radius">
+    <form [formGroup]="solicitudPrestamoForm" (ngSubmit)="onSubmit()">
+        <div class="row g-3">
+
+            <!-- Monto del Préstamo -->
+            <div class="col-md-6">
+                <div class="mb-3 m-form__group">
+                    <label class="form-label">
+                         Costo del inmueble <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group" [class.is-invalid]="isFieldInvalid('monto')">
+                        <span class="input-group-text bg-light-primary"
+                            [class.is-invalid]="isFieldInvalid('monto')">
+                            <i class="fa fa-money-bill txt-primary"></i>
+                        </span>
+                        <input type="text" class="form-control" 
+                            [value]="montoDisplayValue" 
+                            (input)="onMontoChange($event)"
+                            placeholder="850,000" 
+                            [class.is-invalid]="isFieldInvalid('monto')"
+                            title="Ingrese el monto del inmueble">
+                    </div>
+                    <div *ngIf="isFieldInvalid('monto')" class="invalid-feedback d-block">
+                        {{ getErrorMessage('monto') }}
+                    </div>
+                </div>
+            </div>
+
+            <!-- porcentajeCuotaInicial -->
+            <div class="col-md-6">
+                <div class="mb-3 m-form__group">
+                    <label class="form-label">
+                        Porcentaje Cuota Inicial <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group" [class.is-invalid]="isFieldInvalid('porcentajeCuotaInicial')">
+                        <span class="input-group-text bg-light-primary"
+                            [class.is-invalid]="isFieldInvalid('porcentajeCuotaInicial')">
+                            <i class="fa fa-percentage txt-primary"></i>
+                        </span>
+                        <input type="number" class="form-control" formControlName="porcentajeCuotaInicial"
+                            placeholder="20" 
+                            (input)="onPorcentajeChange($event)"
+                            [class.is-invalid]="isFieldInvalid('porcentajeCuotaInicial')">
+
+                        <div *ngIf="isFieldInvalid('porcentajeCuotaInicial')" class="invalid-feedback d-block">
+                            {{ getErrorMessage('porcentajeCuotaInicial') }}
+                        </div>
+                    </div>
+                    <div *ngIf="solicitudPrestamoForm.get('monto')?.value && solicitudPrestamoForm.get('porcentajeCuotaInicial')?.value" class="mt-2 cuota-inicial-display">
+                        <strong>Tu cuota inicial sería de:</strong>
+                        <span class="text-primary fs-5">S/ {{ cuotaInicialCalculada | currencyFormat }}</span>
+                     </div>   
+                </div>
+            </div>
+
+              <!-- Plazo en Meses -->
+            <div class="col-md-6">
+                <div class="mb-3 m-form__group">
+                    <label class="form-label ">
+                        Plazo de crédito (años)<span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group" [class.is-invalid]="isFieldInvalid('plazoAnios')">
+                        <span class="input-group-text bg-light-secondary"
+                            [class.is-invalid]="isFieldInvalid('plazoAnios')">
+                            <i class="fa fa-calendar-alt txt-secondary"></i>
+                        </span>
+                        <input type="number" class="form-control" formControlName="plazoAnios" placeholder="12"
+                            [class.is-invalid]="isFieldInvalid('plazoAnios')">
+                    </div>
+                    <div *ngIf="isFieldInvalid('plazoAnios')" class="invalid-feedback d-block">
+                        {{ getErrorMessage('plazoAnios') }}
+                    </div>
+                </div>
+            </div>
+            <!-- Cliente -->
+            <div class="col-md-6">
+                <div class="mb-3 m-form__group position-relative">
+                    <label class="form-label">
+                        Cliente <span class="text-danger">*</span>
+                    </label>
+                    
+                    <!-- Input de búsqueda -->
+                    <div class="input-group" [class.is-invalid]="isFieldInvalid('clienteId')">
+                        <span class="input-group-text bg-light-secondary">
+                            <i class="fa fa-user txt-secondary"></i>
+                        </span>
+                        <input 
+                            type="text" 
+                            class="form-control" 
+                            [(ngModel)]="searchTerm"
+                            [ngModelOptions]="{standalone: true}"
+                            (input)="onSearchCliente()"
+                            [placeholder]="selectedClienteNombre || 'Buscar cliente por nombre o DNI...'"
+                            [class.is-invalid]="isFieldInvalid('clienteId')"
+                        />
+                    </div>
+
+                    <!-- Dropdown de resultados -->
+                    <div *ngIf="filteredClientes.length > 0 && searchTerm" 
+                         class="list-group position-absolute w-100" 
+                         style="z-index: 1000; max-height: 200px; overflow-y: auto; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <button 
+                            type="button"
+                            *ngFor="let cliente of filteredClientes" 
+                            class="list-group-item list-group-item-action"
+                            (click)="selectCliente(cliente)">
+                            <div class="fw-medium">{{ cliente.nombreCompleto }}</div>
+                            <small class="text-muted">{{ cliente.documentoIdentidad }}</small>
+                        </button>
+                    </div>
+
+                    <div *ngIf="isFieldInvalid('clienteId')" class="invalid-feedback d-block">
+                        {{ getErrorMessage('clienteId') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>

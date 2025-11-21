@@ -1,0 +1,244 @@
+/**
+ * ============================================
+ * ESTILOS: LISTADO DE CLIENTES
+ * ============================================
+ * 
+ * Estilos adicionales siguiendo el patrón de Cuba.
+ * Cuba usa Bootstrap 5 + Tailwind CSS híbrido.
+ * El modo oscuro se maneja automáticamente.
+ */
+
+
+// Tabla mejorada
+.table {
+  thead {
+    &.bg-light {
+      background-color: #f8f9fa;
+      
+      th {
+        color: #495057;
+        font-weight: 600;
+        border-bottom: 2px solid #dee2e6;
+        padding: 1rem 0.75rem;
+      }
+    }
+  }
+  
+  tbody {
+    tr {
+      transition: all 0.2s ease;
+      
+      &:hover {
+        background-color: rgba(0, 0, 0, 0.02);
+        transform: translateY(-1px);
+      }
+      
+      td {
+        vertical-align: middle;
+        padding: 1rem 0.75rem;
+      }
+    }
+  }
+}
+
+// Modo oscuro
+body.dark-only {
+  .avatar-circle {
+    background: linear-gradient(135deg, #4c51bf 0%, #553c9a 100%);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  }
+  
+  .table {
+    thead.bg-light {
+      background-color: #2a3142 !important;
+      
+      th {
+        color: #d1d5db !important;
+        border-bottom-color: #3e4555 !important;
+      }
+    }
+    
+    tbody {
+      tr {
+        &:hover {
+          background-color: rgba(255, 255, 255, 0.05);
+        }
+      }
+    }
+  }
+  
+  .text-muted {
+    color: #9ca3af !important;
+  }
+}
+
+// Badges con mejores estilos
+.badge {
+  font-weight: 500;
+  padding: 0.35em 0.65em;
+  font-size: 0.85em;
+}
+
+// Botones de acción
+.btn-sm {
+  transition: all 0.2s ease;
+  
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  i {
+    font-size: 13px;
+  }
+}
+
+// Input de búsqueda mejorado
+.form-control {
+  transition: all 0.2s ease;
+  
+  &:focus {
+    box-shadow: 0 0 0 0.2rem rgba(var(--theme-default-rgb), 0.15);
+    transform: translateY(-1px);
+  }
+}
+
+// Modal con animación
+.modal {
+  animation: fadeIn 0.2s ease;
+  
+  &.show {
+    display: block !important;
+  }
+}
+
+.modal-content {
+  animation: slideUp 0.3s ease;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Estado vacío
+.text-center {
+  svg {
+    opacity: 0.5;
+    transition: opacity 0.3s ease;
+    
+    &:hover {
+      opacity: 0.7;
+    }
+  }
+}
+
+// ========================================
+// ANIMACIÓN DE ENTRADA DE FILAS
+// ========================================
+tbody tr {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// ========================================
+// ESTILOS PARA BOTONES DE ACCIÓN
+// ========================================
+button {
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  transition: all 0.2s ease;
+}
+
+// ========================================
+// RESPONSIVE: TABLA EN MÓVILES
+// ========================================
+@media (max-width: 768px) {
+  // En móviles, las tablas pueden ser difíciles de leer
+  // Puedes implementar un diseño de tarjetas aquí si lo prefieres
+  
+  table {
+    font-size: 0.875rem;
+  }
+
+  .px-6 {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+// ========================================
+// HOVER EN FILAS
+// ========================================
+tbody tr {
+  &:hover {
+    cursor: pointer;
+  }
+}
+
+// ========================================
+// ESTILOS PARA BADGES DE ESTADO
+// ========================================
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  
+  &::before {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background-color: currentColor;
+  }
+}
+
+// ========================================
+// SPINNER DE CARGA PERSONALIZADO
+// ========================================
+.spinner {
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

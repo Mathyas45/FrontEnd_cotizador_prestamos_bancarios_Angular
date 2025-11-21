@@ -1,0 +1,15 @@
+<div class="card" [ngClass]="cardClass">
+
+  <div class="card-header card-no-border" [class.card-no-border]="!border" [class.pb-2]="padding" [ngClass]="header">
+    <div class="header-top">
+      @if(headerTitle) {
+        <h5 [ngClass]="headerClass">{{ headerTitle }}</h5>
+      }
+    </div>
+  </div>
+  <div class="card-body" [ngClass]="cardBodyClass">
+    <ng-content></ng-content>
+  </div>
+
+</div>
+  

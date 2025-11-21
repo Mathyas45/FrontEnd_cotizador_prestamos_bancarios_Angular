@@ -1,0 +1,144 @@
+<!-- Formulario de Cliente (sin modal wrapper) -->
+<div class="card-body card-wrapper input-radius">
+  <form [formGroup]="clienteForm" (ngSubmit)="onSubmit()">
+    <div class="row g-3">
+
+      <!-- Nombre Completo -->
+      <div class="col-md-6">
+        <div class="mb-3 m-form__group">
+          <label class="form-label">
+            Nombre Completo <span class="text-danger">*</span>
+          </label>
+          <div class="input-group" [class.is-invalid]="isFieldInvalid('nombreCompleto')">
+            <span class="input-group-text bg-light-primary" [class.is-invalid]="isFieldInvalid('nombreCompleto')">
+              <i class="fa fa-user txt-primary"></i>
+            </span>
+            <input 
+              type="text" 
+              class="form-control" 
+              formControlName="nombreCompleto"
+              placeholder="Juan Pérez García"
+              [class.is-invalid]="isFieldInvalid('nombreCompleto')">
+          </div>
+          <div *ngIf="isFieldInvalid('nombreCompleto')" class="invalid-feedback d-block">
+            {{ getErrorMessage('nombreCompleto') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Documento de Identidad -->
+      <div class="col-md-6">
+        <div class="mb-3 m-form__group">
+          <label class="form-label">
+            Documento Identidad <span class="text-danger">*</span>
+          </label>
+          <div class="input-group" [class.is-invalid]="isFieldInvalid('documentoIdentidad')">
+            <span class="input-group-text bg-light-secondary" [class.is-invalid]="isFieldInvalid('documentoIdentidad')">
+              <i class="fa fa-id-card txt-secondary"></i>
+            </span>
+            <input 
+              type="text" 
+              class="form-control" 
+              formControlName="documentoIdentidad"
+              placeholder="12345678"
+              [class.is-invalid]="isFieldInvalid('documentoIdentidad')">
+          </div>
+          <div *ngIf="isFieldInvalid('documentoIdentidad')" class="invalid-feedback d-block">
+            {{ getErrorMessage('documentoIdentidad') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div class="col-md-6">
+        <div class="mb-3 m-form__group">
+          <label class="form-label">
+            Email <span class="text-danger">*</span>
+          </label>
+          <div class="input-group" [class.is-invalid]="isFieldInvalid('email')">
+            <span class="input-group-text bg-light-primary" [class.is-invalid]="isFieldInvalid('email')">
+              <i class="fa fa-envelope txt-primary"></i>
+            </span>
+            <input 
+              type="email" 
+              class="form-control" 
+              formControlName="email"
+              placeholder="correo@ejemplo.com"
+              [class.is-invalid]="isFieldInvalid('email')">
+          </div>
+          <div *ngIf="isFieldInvalid('email')" class="invalid-feedback d-block">
+            {{ getErrorMessage('email') }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Teléfono -->
+      <div class="col-md-6">
+        <div class="mb-3 m-form__group">
+          <label class="form-label">
+            Teléfono
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-light-secondary">
+              <i class="fa fa-phone txt-secondary"></i>
+            </span>
+            <input 
+              type="tel" 
+              class="form-control" 
+              formControlName="telefono"
+              placeholder="987654321">
+          </div>
+        </div>
+      </div>
+
+      <!-- Ingreso Mensual -->
+      <div class="col-md-6">
+        <div class="mb-3 m-form__group">
+          <label class="form-label">
+            Ingreso Mensual
+          </label>
+          <div class="input-group">
+            <span class="input-group-text bg-light-primary">
+              <i class="fa fa-money-bill txt-primary"></i>
+            </span>
+            <input 
+              type="number" 
+              class="form-control" 
+              formControlName="ingresoMensual"
+              placeholder="0.00"
+              step="0.01"
+              min="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Estado -->
+      <div class="col-md-6">
+        <div class="mb-3 m-form__group">
+          <label class="form-label">
+            Estado <span class="text-danger">*</span>
+          </label>
+          <div class="input-group" [class.is-invalid]="isFieldInvalid('regEstado')">
+            <span class="input-group-text bg-light-secondary" [class.is-invalid]="isFieldInvalid('regEstado')">
+              <i class="fa fa-check-circle txt-secondary"></i>
+            </span>
+            <select 
+              class="form-select" 
+              formControlName="regEstado"
+              [class.is-invalid]="isFieldInvalid('regEstado')">
+              <option *ngFor="let estado of estados" [value]="estado.value">
+                {{ estado.value === 1 ? 'Activo' : 'Inactivo' }}
+              </option>
+            </select>
+          </div>
+          <div *ngIf="isFieldInvalid('regEstado')" class="invalid-feedback d-block">
+            {{ getErrorMessage('regEstado') }}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </form>
+</div>
+
+

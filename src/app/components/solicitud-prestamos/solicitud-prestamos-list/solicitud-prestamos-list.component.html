@@ -1,0 +1,236 @@
+<!--
+  ============================================
+  VISTA: LISTA DE SOLICITUDES DE PRÉSTAMOS
+    ============================================
+-->
+
+<div class="container-fluid">
+
+  <!-- ========================================
+       HEADER: TÍTULO Y BOTÓN CREAR
+       ======================================== -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <!-- Componente Card de la plantilla Cuba -->
+      <app-card [title]="'Gestión de Solicitudes de Préstamos'" [headerClass]="'border-b pb-3'">
+
+        <!-- Slot del contenido de la tarjeta -->
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+
+          <!-- Descripción -->
+          <div>
+            <p class="text-gray-600">
+              Administra todas las solicitudes de préstamos de tu sistema. Puedes crear, editar y eliminar solicitudes.
+            </p>
+          </div>
+        </div>
+        <!-- Botón Crear Solicitud -->
+        <div class="flex justify-end">
+          <button (click)="openCreateModal()"
+            class="btn btn-primary text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors">
+            <i class="feather icon-plus"></i>
+            Nueva Solicitud de Préstamo
+          </button>
+        </div>
+
+      </app-card>
+    </div>
+  </div>
+
+  <!-- ========================================
+       BARRA DE BÚSQUEDA Y EXPORTACIÓN
+       ======================================== -->
+  <div class="row mb-4">
+    <div class="col-12">
+      <app-card>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="searchInput" class="form-label">Buscar Solicitudes</label>
+            <input id="searchInput" type="text" [(ngModel)]="searchTerm" (input)="filterSolicitudPrestamos()"
+              placeholder="Buscar por nombre, documento o email..." class="form-control" />
+          </div>
+
+        </div>
+
+        <!-- Contador de resultados -->
+        <div class="f-light">
+          Mostrando {{ solicitudPrestamosFiltrados.length }} de {{ solicitudPrestamos.length }} solicitudes
+        </div>
+      </app-card>
+    </div>
+  </div>
+
+  <!-- ========================================
+       ESTADO: CARGANDO
+       ======================================== -->
+  <div *ngIf="isLoading" class="row">
+    <div class="col-12">
+      <app-card>
+        <div class="flex flex-col items-center justify-center py-12">
+          <!-- Spinner de carga -->
+          <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mb-4"></div>
+          <p class="text-gray-600">Cargando solicitudes...</p>
+        </div>
+      </app-card>
+    </div>
+  </div>
+
+  <!-- ========================================
+       ESTADO: ERROR
+       ======================================== -->
+  <div *ngIf="hasError && !isLoading" class="row">
+    <div class="col-12">
+      <app-card>
+        <div class="flex flex-col items-center justify-center py-12">
+          <!-- Ícono de error -->
+          <i class="feather icon-alert-circle w-16 h-16 text-red-500 mb-4"></i>
+          <h3 class="text-xl font-semibold text-gray-800 mb-2">Error al cargar las solicitudes</h3>
+          <p class="text-gray-600 mb-4">{{ errorMessage }}</p>
+          <button (click)="loadSolicitudPrestamos()"
+            class="btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg">
+            Reintentar
+          </button>
+        </div>
+      </app-card>
+    </div>
+  </div>
+
+  <!-- ========================================
+       TABLA DE SOLICITUDES CON PRIMENG
+       ======================================== -->
+  <div *ngIf="!isLoading && !hasError" class="row">
+    <div class="col-12">
+      <app-card [padding]="false">
+
+        <!-- Botones de exportación alineados a la derecha -->
+        <div class="col-md-6 mb-3 d-flex justify-content-end">
+          <button (click)="exportToExcel()" class="btn btn-primary me-2 text-white">
+            <i class="fa fa-file-text" aria-hidden="true"></i> Excel
+          </button>
+          <button (click)="exportToPDF()" class="btn btn-outline-primary border-primary">
+            <i class="feather icon-file"></i> PDF
+          </button>
+        </div>
+
+        <!-- PrimeNG Table -->
+        <p-table [value]="solicitudPrestamosFiltrados" [paginator]="true" [rows]="10"
+          [rowsPerPageOptions]="[5, 10, 20, 50]" [showCurrentPageReport]="true"
+          currentPageReportTemplate="Mostrando {first} a {last} de {totalRecords} solicitudes"
+          [tableStyle]="{'min-width': '50rem'}">
+
+          <ng-template pTemplate="header">
+            <tr>
+              <th pSortableColumn="cliente.nombreCompleto">Cliente <p-sortIcon
+                  field="cliente.nombreCompleto"></p-sortIcon></th>
+              <th pSortableColumn="cliente.documentoIdentidad">Documento <p-sortIcon
+                  field="cliente.documentoIdentidad"></p-sortIcon></th>
+              <th pSortableColumn="montoFinanciar">Monto <p-sortIcon field="montoFinanciar"></p-sortIcon></th>
+              <th pSortableColumn="plazoAnios">Plazo <p-sortIcon field="plazoAnios"></p-sortIcon></th>
+              <th pSortableColumn="tasaInteres">Tasa <p-sortIcon field="tasaInteres"></p-sortIcon></th>
+              <th pSortableColumn="createdAt">Fecha <p-sortIcon field="createdAt"></p-sortIcon></th>
+              <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+              <th>Acciones</th>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="body" let-solicitud>
+            <tr>
+              <td>
+                <div class="fw-medium">{{ solicitud.cliente.nombreCompleto }}</div>
+                <div class="f-light small text-muted">{{ solicitud.cliente.email }}</div>
+              </td>
+              <td>
+                <div class="fw-medium">{{ solicitud.cliente.documentoIdentidad }}</div>
+                <div class="f-light small">
+                  {{ solicitud.cliente.documentoIdentidad?.length === 8 ? 'DNI' :
+                  solicitud.cliente.documentoIdentidad?.length === 11 ? 'RUC' : 'Otro' }}
+                </div>
+              </td>
+              <td>{{ solicitud.montoFinanciar | currency: 'S/ ' }}</td>
+              <td>{{ solicitud.plazoAnios }} años</td>
+              <td>{{ solicitud.tasaInteres }}%</td>
+              <td>{{ solicitud.createdAt | date: 'dd/MM/yyyy' }}</td>
+              <td>
+                <span [class]="'badge ' + getEstadoClass(solicitud.estado)">
+                  {{ solicitud.estado === 1 ? 'Activo' : 'Inactivo' }}
+                </span>
+              </td>
+              <td>
+                <button *ngIf="solicitud.id" (click)="openEditModal(solicitud.id)" title="Editar"
+                  class="btn btn-sm btn-primary text-white me-1">
+                  <i class="fa fa-edit"></i>
+                </button>
+                <button *ngIf="solicitud.id" (click)="deleteSolicitud(solicitud.cliente.nombreCompleto, solicitud.id)" title="Eliminar"
+                  class="btn btn-sm btn-outline-primary border-primary">
+                  <i class="feather icon-trash"></i>
+                </button>
+              </td>
+            </tr>
+          </ng-template>
+
+          <ng-template pTemplate="emptymessage">
+            <tr>
+              <td colspan="8" class="text-center py-4">
+                <div class="d-flex flex-column align-items-center">
+                  <i class="feather icon-inbox mb-3" style="width: 64px; height: 64px;"></i>
+                  <h5 class="fw-semibold mb-2">No hay solicitudes de préstamos</h5>
+                  <p class="f-light mb-3">
+                    {{ searchTerm ? 'No se encontraron resultados para "' + searchTerm + '"' : 'Aún no has agregado solicitudes de préstamos' }}
+                  </p>
+                  <button *ngIf="!searchTerm" (click)="openCreateModal()" class="btn btn-primary">
+                    Crear primera solicitud de préstamo
+                  </button>
+                </div>
+              </td>
+            </tr>
+          </ng-template>
+        </p-table>
+
+      </app-card>
+    </div>
+  </div>
+
+</div>
+
+<!-- ========================================
+     MODAL DEL FORMULARIO DE SOLICITUDES DE PRÉSTAMOS
+     ======================================== -->
+<div *ngIf="showModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);"
+  (click)="closeModal()">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" (click)="$event.stopPropagation()">
+
+    <div class="modal-content">
+
+      <!-- Header del Modal -->
+      <div class="modal-header">
+        <h5 class="modal-title">
+          {{ selectedSolicitudId ? 'Editar Solicitud de Préstamo' : 'Crear Nueva Solicitud de Préstamo' }}
+        </h5>
+        <button type="button" class="btn-close" (click)="closeModal()">
+        </button>
+      </div>
+
+      <!-- Formulario -->
+      <div class="modal-body">
+        <app-solicitudPrestamos-form #SolicitudPrestamosFormComponent [solicitudId]="selectedSolicitudId"
+          [isModal]="true" (onSaved)="onSolicitudSaved()" (onCancelEvent)="closeModal()">
+        </app-solicitudPrestamos-form>
+      </div>
+
+      <!-- Footer del Modal -->
+      <div class="modal-footer">
+        <button type="button" class="btn btn-light" (click)="closeModal()">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primary text-white" (click)="submitForm()">
+          <i class="fa fa-save me-1"></i>
+          {{ selectedSolicitudId ? 'Actualizar Solicitud de Préstamo' : 'Crear Solicitud de Préstamo' }}
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<app-action-confirm #actionConfirm (confirmAction)="onConfirmAction($event)"></app-action-confirm>

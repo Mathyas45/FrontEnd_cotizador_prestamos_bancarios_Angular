@@ -1,0 +1,193 @@
+/**
+ * ============================================
+ * ESTILOS: FORMULARIO DE CLIENTE (PATRÓN CUBA)
+ * ============================================
+ * 
+ * Sigue el estilo de Cuba con Font Awesome
+ */
+
+// Input groups con íconos (estilo Cuba)
+.input-group {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  
+  .input-group-text {
+    display: flex;
+    align-items: center;
+    padding: 0.575rem 0.75rem;
+    font-size: 1rem;
+    font-weight: 400;
+    line-height: 1.5;
+    color: #6c757d;
+    text-align: center;
+    white-space: nowrap;
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+    
+    &:not(:last-child) {
+      border-right: 0;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+    
+    &.bg-light-primary {
+      background-color: rgba(var(--theme-default-rgb), 0.1) !important;
+      border-color: #ced4da;
+      
+      .txt-primary,
+      .fa {
+        color: var(--theme-default) !important;
+      }
+    }
+    
+    &.bg-light-secondary {
+      background-color: rgba(115, 102, 255, 0.1) !important;
+      border-color: #ced4da;
+      
+      .txt-secondary,
+      .fa {
+        color: #7366ff !important;
+      }
+    }
+    
+    i {
+      font-size: 1rem;
+    }
+  }
+  
+  .form-control,
+  .form-select {
+    position: relative;
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 0;
+    
+    &:not(:first-child) {
+      border-left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+    
+    &:focus {
+      border-color: #ced4da;
+      box-shadow: none;
+    }
+  }
+  
+  // Estado inválido - aplica borde rojo a todo el grupo
+  &.is-invalid {
+    .input-group-text {
+      border-color: #dc3545;
+    }
+    
+    .form-control,
+    .form-select {
+      border-color: #dc3545;
+    }
+  }
+  
+  .input-group-text.is-invalid {
+    border-color: #dc3545;
+  }
+  
+  // Cuando hay múltiples input-group-text seguidos
+  .input-group-text + .input-group-text {
+    border-left: 0;
+  }
+}
+
+// Modo oscuro
+body.dark-only {
+  .input-group {
+    .input-group-text {
+      background-color: #2a3142;
+      border-color: #3e4555;
+      color: #d1d5db;
+      
+      &.bg-light-primary {
+        background-color: rgba(var(--theme-default-rgb), 0.15) !important;
+        border-color: #3e4555;
+      }
+      
+      &.bg-light-secondary {
+        background-color: rgba(115, 102, 255, 0.15) !important;
+        border-color: #3e4555;
+      }
+    }
+    
+    .form-control,
+    .form-select {
+      background-color: #2a3142;
+      border-color: #3e4555;
+      color: #d1d5db;
+    }
+  }
+}
+
+// Labels mejorados
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: #495057;
+  
+  .text-danger {
+    margin-left: 2px;
+  }
+}
+
+body.dark-only .form-label {
+  color: #d1d5db;
+}
+
+// Animación de mensajes de error
+.invalid-feedback {
+  animation: slideDown 0.2s ease;
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Botones
+.btn {
+  transition: all 0.2s ease;
+  font-weight: 500;
+  
+  &:active:not(:disabled) {
+    transform: scale(0.98);
+  }
+  
+  &:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+// Spinner de carga
+.spinner-border {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+}
+
+// Responsive
+@media (max-width: 768px) {
+  .card-wrapper {
+    padding: 1rem;
+  }
+  
+  .col-md-6 {
+    margin-bottom: 0.5rem;
+  }
+}
