@@ -4,6 +4,7 @@ import { Routes } from '@angular/router';
 // Importamos los componentes
 import { SolicitudPrestamosListComponent } from './solicitud-prestamos-list/solicitud-prestamos-list.component';
 import { SolicitudPrestamosFormComponent } from './solicitud-prestamos-form/solicitud-prestamos-form.component';
+import { SolicitudPrestamosNuevaCotizacionComponent } from './solicitud-prestamos-nueva-cotizacion/solicitud-prestamos-nueva-cotizacion.component';
 /**
  * Array de rutas del módulo Solicitud de Préstamos
  * Se exporta como 'solicitudPrestamos' para importarlo en content.routes.ts
@@ -34,6 +35,14 @@ export const solicitudPrestamos: Routes = [
         data: {
             title: 'Editar Solicitud de Préstamo',
             breadcrumb: 'Editar Solicitud de Préstamo'
+        }
+    },
+    {
+        path: 'nueva-cotizacion',
+        component: SolicitudPrestamosNuevaCotizacionComponent,
+        data: {
+            title: 'Nueva Cotización de Préstamo',
+            breadcrumb: 'Nueva Cotización de Préstamo'
         }
     }
 ];

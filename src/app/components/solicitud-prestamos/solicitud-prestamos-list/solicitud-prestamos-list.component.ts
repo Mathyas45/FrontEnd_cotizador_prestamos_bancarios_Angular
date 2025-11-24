@@ -2,6 +2,7 @@ import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subject, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
 
 // PrimeNG
 import { TableModule } from 'primeng/table';
@@ -75,6 +76,7 @@ export class SolicitudPrestamosListComponent implements OnInit, OnDestroy {
   constructor(
     private solicitudPrestamosService: SolicitudPrestamosService,
     private toastr: ToastrService,
+    private router: Router // Inyectamos el servicio Router para navegación es decir para cambiar de vistas
   ) {}
 
 
@@ -186,6 +188,9 @@ export class SolicitudPrestamosListComponent implements OnInit, OnDestroy {
     this.selectedSolicitudId = null;
     this.showModal = true;
   }
+  openNuevaPestanaCotizacion(): void {
+    this.router.navigate(['solicitud-prestamos/nueva-cotizacion']); // Redirige a la vista de nueva cotización
+  }  
 
   openEditModal(id: number): void {
     this.selectedSolicitudId = id;
@@ -209,12 +214,28 @@ export class SolicitudPrestamosListComponent implements OnInit, OnDestroy {
    */
   submitForm(): void {
     if (this.solicitudPrestamosFormComponent) {
-      this.solicitudPrestamosFormComponent.onSubmit();
+      this.solicitudPrestamosFormComponent.onSubmit();//onSubmit es el método del componente hijo que maneja el envío del formulario
     }else {
       console.error('El componente del formulario no está disponible.');
     }
   }
 
+
+  /**
+   * Verifica si el formulario es inválido
+   */
+  isFormInvalid(): boolean {
+    return this.solicitudPrestamosFormComponent ?.solicitudPrestamoForm.invalid || false; // Devuelve true si el formulario es inválido
+  }
+
+   /**
+   * Verifica si el formulario está enviando datos
+   */
+  isFormSubmitting(): boolean {
+    return this.solicitudPrestamosFormComponent ?.isSubmitting || false; // Devuelve true si el formulario está enviando datos
+  }
+
+ 
   // ========================================
   // MÉTODOS DE EXPORTACIÓN
   // ========================================

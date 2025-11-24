@@ -33,7 +33,7 @@ export const content: Routes = [
             title: 'Solicitud de Préstamos',
             breadcrumb: 'Solicitud de Préstamos'
         }
-    }
-
+    },
+ 
 
 ]

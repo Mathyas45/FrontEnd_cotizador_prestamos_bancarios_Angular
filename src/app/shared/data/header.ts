@@ -7,7 +7,7 @@ export const language: Language[] = [
         code: 'en',
         icon: 'us',
         country_code: "US",
-        active: true
+        active: false
     },
     {
         id: 2,
@@ -19,7 +19,8 @@ export const language: Language[] = [
         id: 3,
         name: 'Español',
         code: 'es',
-        icon: 'es'
+        icon: 'es',
+        active: true
     },
     {
         id: 4,

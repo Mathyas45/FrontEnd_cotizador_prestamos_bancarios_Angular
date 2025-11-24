@@ -46,7 +46,7 @@
                             {{ getErrorMessage('porcentajeCuotaInicial') }}
                         </div>
                     </div>
-                    <div *ngIf="solicitudPrestamoForm.get('monto')?.value && solicitudPrestamoForm.get('porcentajeCuotaInicial')?.value" class="mt-2 cuota-inicial-display">
+                    <div *ngIf="cuotaInicialCalculada > 0" class="mt-2 cuota-inicial-display">
                         <strong>Tu cuota inicial sería de:</strong>
                         <span class="text-primary fs-5">S/ {{ cuotaInicialCalculada | currencyFormat }}</span>
                      </div>   

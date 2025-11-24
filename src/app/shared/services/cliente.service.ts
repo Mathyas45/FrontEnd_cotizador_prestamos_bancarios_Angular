@@ -26,6 +26,7 @@ import { catchError, map } from 'rxjs/operators';
 
 // Importamos los modelos que creamos
 import { Cliente, ClienteCreateDto, ClienteUpdateDto } from '../interface/cliente.model';
+import { ApiResponse } from '../interface/api-response.model';
 
 /**
  * @Injectable: Decorador que hace que este servicio pueda ser inyectado
@@ -81,13 +82,13 @@ export class ClienteService {
    * Para usarlo en el componente: this.clienteService.getAll().subscribe(...)
    */
   getAll(): Observable<Cliente[]> {
-    return this.http.get<Cliente[]>(this.apiUrl)
+    return this.http.get<ApiResponse<Cliente[]>>(this.apiUrl)
       .pipe(
         map(response => {
-          // Transformar fechas de string a Date
-          return response.map(cliente => ({
-            ...cliente,// esto es para copiar todas las propiedades del cliente original sirve para no perder ningun dato
-            createdAt: cliente.createdAt ? new Date(cliente.createdAt) : undefined,//si createdAt tiene valor lo convierte a Date si no lo deja como undefined
+          console.log('Respuesta del backend:', response.message);
+          return response.data.map((cliente: Cliente) => ({
+            ...cliente,
+            createdAt: cliente.createdAt ? new Date(cliente.createdAt) : undefined,
             updatedAt: cliente.updatedAt ? new Date(cliente.updatedAt) : undefined
           }));
         }),
@@ -111,14 +112,16 @@ export class ClienteService {
    */
   getById(id: number): Observable<Cliente> {
     const url = `${this.apiUrl}/${id}`;
-    
-    return this.http.get<Cliente>(url)
+    return this.http.get<ApiResponse<Cliente>>(url)
       .pipe(
-        map(cliente => ({
-          ...cliente,
-          createdAt: cliente.createdAt ? new Date(cliente.createdAt) : undefined,
-          updatedAt: cliente.updatedAt ? new Date(cliente.updatedAt) : undefined
-        })),
+        map(response => {
+          console.log('Mensaje del backend:', response.message);
+          return {
+            ...response.data,
+            createdAt: response.data.createdAt ? new Date(response.data.createdAt) : undefined,
+            updatedAt: response.data.updatedAt ? new Date(response.data.updatedAt) : undefined
+          };
+        }),
         catchError(this.handleError)
       );
   }
@@ -135,9 +138,10 @@ export class ClienteService {
    * 
    * Envía un POST con los datos del formulario
    */
-  create(cliente: ClienteCreateDto): Observable<Cliente> {
-    return this.http.post<Cliente>(`${this.apiUrl}/register`, cliente, this.httpOptions)
+  create(cliente: ClienteCreateDto): Observable<string> {
+    return this.http.post<ApiResponse<void>>(`${this.apiUrl}/register`, cliente, this.httpOptions)
       .pipe(
+        map(response => response.message),
         catchError(this.handleError)
       );
   }
@@ -155,11 +159,11 @@ export class ClienteService {
    * 
    * Envía un PUT con los datos modificados
    */
-  update(id: number, cliente: ClienteUpdateDto): Observable<Cliente> {
+  update(id: number, cliente: ClienteUpdateDto): Observable<string> {
     const url = `${this.apiUrl}/update/${id}`;
-    
-    return this.http.put<Cliente>(url, cliente, this.httpOptions)
+    return this.http.put<ApiResponse<void>>(url, cliente, this.httpOptions)
       .pipe(
+        map(response => response.message),
         catchError(this.handleError)
       );
   }
@@ -176,11 +180,11 @@ export class ClienteService {
    * 
    * Envía un DELETE al backend
    */
-  delete(id: number): Observable<void> {
+  delete(id: number): Observable<string> {
     const url = `${this.apiUrl}/delete/${id}`;
-    
-    return this.http.delete<void>(url, this.httpOptions)
+    return this.http.delete<ApiResponse<void>>(url, this.httpOptions)
       .pipe(
+        map(response => response.message),
         catchError(this.handleError)
       );
   }

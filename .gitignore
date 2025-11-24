@@ -22,5 +22,6 @@ pnpm-debug.log
 ### OS ###
 .DS_Store
 Thumbs.db
-### archivos .md ###
+### archivos .md menos README.md ###
 *.md
+!README.md

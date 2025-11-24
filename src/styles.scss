@@ -5,6 +5,37 @@
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
+/* Toastr - Estilos para asegurar que se vea correctamente */
+#toast-container {
+  z-index: 999999 !important;
+  
+  > div {
+    opacity: 1 !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  }
+  
+  &.toast-top-right {
+    top: 20px;
+    right: 20px;
+  }
+}
+
+.toast-success {
+  background-color: #51A351 !important;
+}
+
+.toast-error {
+  background-color: #BD362F !important;
+}
+
+.toast-info {
+  background-color: #2F96B4 !important;
+}
+
+.toast-warning {
+  background-color: #F89406 !important;
+}
+
 /* PrimeNG Table - Estilos personalizados con soporte de tema claro/oscuro */
 .p-datatable {
   .p-datatable-thead > tr > th {

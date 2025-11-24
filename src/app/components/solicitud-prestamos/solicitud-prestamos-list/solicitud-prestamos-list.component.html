@@ -24,12 +24,17 @@
             </p>
           </div>
         </div>
-        <!-- Botón Crear Solicitud -->
-        <div class="flex justify-end">
+        <div class="flex justify-between items-center mt-2">
+          <!-- Botón Cotizar Solicitud -->
+          <button (click)="openNuevaPestanaCotizacion()" class="btn btn-primary text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors">
+            <i class="feather icon-plus"></i>
+            Cotizar solicitud de Préstamo
+          </button>
+          <!-- Botón Crear Solicitud -->
           <button (click)="openCreateModal()"
             class="btn btn-primary text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors">
             <i class="feather icon-plus"></i>
-            Nueva Solicitud de Préstamo
+            Crear Solicitud de Préstamo
           </button>
         </div>
 
@@ -195,8 +200,7 @@
 <!-- ========================================
      MODAL DEL FORMULARIO DE SOLICITUDES DE PRÉSTAMOS
      ======================================== -->
-<div *ngIf="showModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);"
-  (click)="closeModal()">
+<div *ngIf="showModal" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
 
   <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" (click)="$event.stopPropagation()">
 
@@ -223,7 +227,7 @@
         <button type="button" class="btn btn-light" (click)="closeModal()">
           Cancelar
         </button>
-        <button type="button" class="btn btn-primary text-white" (click)="submitForm()">
+        <button type="button" class="btn btn-primary text-white" (click)="submitForm()" [disabled]="isFormInvalid() || isFormSubmitting()">
           <i class="fa fa-save me-1"></i>
           {{ selectedSolicitudId ? 'Actualizar Solicitud de Préstamo' : 'Crear Solicitud de Préstamo' }}
         </button>

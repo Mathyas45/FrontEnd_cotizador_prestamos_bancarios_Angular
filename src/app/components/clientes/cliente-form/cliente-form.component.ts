@@ -205,32 +205,32 @@ export class ClienteFormComponent implements OnInit, OnDestroy, OnChanges {
         Validators.required,
         Validators.minLength(3),
         Validators.maxLength(255)
-      ]],
+      ],],
 
       // Documento de identidad
       documentoIdentidad: ['', [
         Validators.required,
         Validators.minLength(8),
         Validators.maxLength(20)
-      ]],
+      ],],
 
       // Email
       email: ['', [
         Validators.required,
         Validators.email,
         Validators.maxLength(255)
-      ]],
+      ],],
 
       // Teléfono (opcional)
       telefono: ['', [
         Validators.maxLength(20),
         Validators.pattern(/^[0-9]{7,20}$/)
-      ]],
+      ],],
 
       // Ingreso mensual (opcional)
       ingresoMensual: [0, [
         Validators.min(0)
-      ]],
+      ],],
 
       // Estado (1 = activo, 0 = inactivo)
       regEstado: [1, Validators.required]
@@ -321,14 +321,14 @@ export class ClienteFormComponent implements OnInit, OnDestroy, OnChanges {
     this.clienteService.create(clienteData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (cliente) => {
+        next: (message) => {
           this.isSubmitting = false;
           
           // Notificación de éxito
-          this.toastr.success('Cliente creado correctamente', 'Éxito');
+          this.toastr.success(message, 'Éxito');
 
           // Emitir evento de guardado exitoso
-          this.onSaved.emit(cliente);
+          this.onSaved.emit();
           
           // Resetear formulario
           this.resetForm();
@@ -365,14 +365,14 @@ export class ClienteFormComponent implements OnInit, OnDestroy, OnChanges {
     this.clienteService.update(this.clienteId, clienteData)
       .pipe(takeUntil(this.destroy$))
       .subscribe({
-        next: (cliente) => {
+        next: (message) => {
           this.isSubmitting = false;
           
           // Notificación de éxito
-          this.toastr.success('Cliente actualizado correctamente', 'Éxito');
+          this.toastr.success(message, 'Éxito');
 
           // Emitir evento de guardado exitoso
-          this.onSaved.emit(cliente);
+          this.onSaved.emit();
         },
         error: (error) => {
           this.isSubmitting = false;

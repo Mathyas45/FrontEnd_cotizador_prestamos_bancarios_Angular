@@ -12,6 +12,6 @@
     "src/main.ts"
   ],
   "include": [
-    "src/**/*.d.ts"
+    "src/**/*.ts"// Asegura que todos los archivos TypeScript en src sean incluidos
   ]
 }

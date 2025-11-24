@@ -25,7 +25,7 @@ export class LanguageComponent {
       }
     })
 
-    this.translate.use('en');
+    this.translate.use('es');
   }
 
   selectLanguage(language: Language) {

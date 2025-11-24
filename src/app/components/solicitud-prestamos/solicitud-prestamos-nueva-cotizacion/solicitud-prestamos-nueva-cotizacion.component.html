@@ -1,0 +1,101 @@
+<div class="container-fluid">
+  <div class="flex flex-wrap gap-4 mb-4">
+    <!-- //boton para volver atrás -->
+    <!-- <button class="btn btn-secondary text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+      <i class="feather icon-arrow-left"></i>
+      Volver
+    </button> -->
+    <div class="flex-1 min-w-[300px]">
+      <app-card [headerTitle]="'Datos para la solicitud de préstamo'" [headerClass]="'border-b pb-3'">
+        <!-- Slot del contenido de la tarjeta -->
+        <div class="">
+          <div>
+            <h6>
+              Complete los datos para la solicitud de préstamo
+            </h6>
+            <!-- Formulario -->
+            <app-solicitudPrestamos-form #SolicitudPrestamosFormComponent (onSaved)="onSolicitudCotizada($event)">
+            </app-solicitudPrestamos-form>
+
+            <!-- Footer del Modal -->
+            <div class="flex justify-center">
+              <button type="button" class="btn btn-primary text-white" (click)="submitForm()"
+                [disabled]="isFormInvalid() || isFormSubmitting()">
+                <i class="fa fa-save me-1"></i>
+                Crear Solicitud de Préstamo
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </app-card>
+    </div>
+    <div class="flex-1 min-w-[300px]">
+      <app-card [headerTitle]="'Datos del Préstamo Cotizado'" [headerClass]="'border-b pb-3'">
+        <!-- Mensaje cuando no hay cotización -->
+        <div *ngIf="!solicitudCotizada" class="text-center py-8">
+          <i class="feather icon-info text-gray-400" style="font-size: 3rem;"></i>
+          <p class="text-gray-500 mt-3">
+            Complete el formulario y haga clic en "Crear Solicitud de Préstamo" para ver la cotización.
+          </p>
+        </div>
+
+        <!-- Datos de la cotización -->
+        <div *ngIf="solicitudCotizada" class="space-y-4">
+          <!-- Datos principales en grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div class="bg-gray-50 p-2 rounded-lg">
+              <label class="text-sm font-semibold text-gray-600">Monto Solicitado:</label>
+              <p class="text-lg font-bold text-gray-900">S/ {{ solicitudCotizada.monto | number:'1.2-2' }}</p>
+            </div>
+            
+            <div class="bg-gray-50 p-2 rounded-lg">
+              <label class="text-sm font-semibold text-gray-600">Cuota Inicial ({{ solicitudCotizada.porcentajeCuotaInicial }}%):</label>
+              <p class="text-lg font-bold text-gray-900">S/ {{ solicitudCotizada.montoCuotaInicial | number:'1.2-2' }}</p>
+            </div>
+            
+            <div class="bg-gray-50 p-2 rounded-lg">
+              <label class="text-sm font-semibold text-gray-600">Monto a Financiar:</label>
+              <p class="text-lg font-bold text-primary-600">S/ {{ solicitudCotizada.montoFinanciar | number:'1.2-2' }}</p>
+            </div>
+            
+            <div class="bg-gray-50 p-2 rounded-lg">
+              <label class="text-sm font-semibold text-gray-600">Plazo:</label>
+              <p class="text-lg font-bold text-gray-900">{{ solicitudCotizada.plazoAnios }} años</p>
+            </div>
+            
+            <div class="bg-gray-50 p-2 rounded-lg">
+              <label class="text-sm font-semibold text-gray-600">Tasa de Interés:</label>
+              <p class="text-lg font-bold text-gray-900">{{ solicitudCotizada.tasaInteres }}% anual</p>
+            </div>
+            
+            
+          </div>
+          
+          <!-- Cliente -->
+          <div class="bg-gray-50 p-2 rounded-lg" *ngIf="solicitudCotizada.cliente">
+            <label class="text-sm font-semibold text-gray-600">Cliente:</label>
+            <p class="text-base text-gray-900">{{ solicitudCotizada.cliente.nombreCompleto }} - {{ solicitudCotizada.cliente.documentoIdentidad }}</p>
+          </div>
+          
+          <!-- Estado -->
+          <div class="bg-gray-50 p-2 rounded-lg">
+            <label class="text-sm font-semibold text-gray-600">Estado:</label>
+            <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold"
+                  [ngClass]="{
+                    'bg-yellow-100 text-yellow-800': solicitudCotizada.estado === 2,
+                    'bg-green-100 text-green-800': solicitudCotizada.estado === 1,
+                    'bg-red-100 text-red-800': solicitudCotizada.estado === 0
+                  }">
+              {{ solicitudCotizada.estado === 1 ? 'Aprobada' : solicitudCotizada.estado === 0 ? 'Rechazada' : 'Pendiente' }}
+            </span>
+          </div>
+          <div class="bg-primary p-2 rounded-lg border-2 border-blue-200">
+              <label class="text-sm font-semibold text-white">Cuota Mensual:</label>
+              <p class="text-xl font-bold text-white">S/ {{ solicitudCotizada.cuotaMensual | number:'1.2-2' }}</p>
+            </div>
+        </div>
+      </app-card>
+    </div>
+  </div>
+</div>

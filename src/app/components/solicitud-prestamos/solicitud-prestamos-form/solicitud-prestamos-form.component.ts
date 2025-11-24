@@ -213,6 +213,58 @@ export class SolicitudPrestamosFormComponent
     } 
   }
 
+
+  onSubmitCotizar(): void {//solo cotizar sin guardar
+    if (this.solicitudPrestamoForm.invalid) {
+      this.toastr.error(
+        "Por favor, corrige los errores en el formulario.",
+      );
+      return;
+    }
+  
+    // Convertir valores a números antes de enviar
+    const montoControl = this.solicitudPrestamoForm.get('monto');
+    const porcentajeControl = this.solicitudPrestamoForm.get('porcentajeCuotaInicial');
+    const plazoControl = this.solicitudPrestamoForm.get('plazoAnios');
+    
+    if (montoControl) {
+      const montoValue = parseFloat(montoControl.value) || 0;
+      console.log('Monto a enviar:', montoValue);
+      montoControl.setValue(montoValue);
+    }
+    
+    if (porcentajeControl) {
+      porcentajeControl.setValue(parseFloat(porcentajeControl.value) || 0);
+    }
+    
+    if (plazoControl) {
+      plazoControl.setValue(parseInt(plazoControl.value) || 0);
+    }
+    
+    this.cotizarSolicitudPrestamo();
+  }
+
+  cotizarSolicitudPrestamo(): void {
+    this.isSubmitting = true;
+    const solicitudACotizar : SolicitudPrestamoCreateDto = this.solicitudPrestamoForm.value;
+    this.solicitudPrestamosService.cotizar(solicitudACotizar)
+      .pipe(takeUntil(this.destroy$))//esto es para manejar la destrucción de suscripciones, pipe es como un middleware que procesa los datos antes de llegar al suscriptor es dcir a la función que maneja la respuesta
+      .subscribe({
+        next: (solicitudPrestamo) => {
+          //imprimir los datos de la solicitud cotizada en consola
+          console.log('Solicitud cotizada:', solicitudPrestamo);
+          this.onSaved.emit(solicitudPrestamo);//emitir hacia el componente padre
+          this.isSubmitting = false;
+        },
+        error: (error: HttpErrorResponse) => {
+          this.toastr.error('Error al crear la solicitud: ' + error.message, 'Error');
+          this.isSubmitting = false;
+        }
+      });
+  }
+
+
+
   crearSolicitudPrestamo(): void {
     this.isSubmitting = true;
     const nuevaSolicitud : SolicitudPrestamoCreateDto = this.solicitudPrestamoForm.value;
@@ -289,7 +341,6 @@ export class SolicitudPrestamosFormComponent
     return this.formValidationService.getErrorMessage(field); // Usar el servicio
   }
 
-
   resetForm(): void {
     this.solicitudPrestamoForm.reset();
     this.montoDisplayValue = '';
@@ -335,14 +386,6 @@ export class SolicitudPrestamosFormComponent
   }
 
 
-  //calcular el monto de la cuota inicial sera decimal
-  calcularCuotaInicial(): number {
-    const monto = parseFloat(this.solicitudPrestamoForm.get('monto')?.value) || 0;
-    const porcentajeCuotaInicial = parseFloat(this.solicitudPrestamoForm.get('porcentajeCuotaInicial')?.value) / 100 || 0;
-    this.cuotaInicialCalculada = monto * porcentajeCuotaInicial;
-    return this.cuotaInicialCalculada;
-  }
-
   // Método para formatear el monto con comas mientras se escribe
   onMontoChange(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -351,42 +394,59 @@ export class SolicitudPrestamosFormComponent
     // Remover todo excepto números y punto decimal
     value = value.replace(/[^0-9.]/g, '');
     
-    // Asegurar solo un punto decimal es decir decimal
+    // Asegurar solo un punto decimal
     const parts = value.split('.');
     if (parts.length > 2) {
       value = parts[0] + '.' + parts.slice(1).join('');
     }
     
-    // Actualizar el valor del formulario (valor numérico sin formato)
-    const numericValue = parseFloat(value) || 0;
+    // Convertir a número
+    const numericValue = value ? parseFloat(value) : 0;
+    
+    // Actualizar el valor del formulario
     this.solicitudPrestamoForm.get('monto')?.setValue(numericValue, { emitEvent: false });
     
-    // Actualizar el valor de visualización con formato
-    if (value) {
-      const num = parseFloat(value);
-      if (!isNaN(num)) {
-        this.montoDisplayValue = num.toLocaleString('en-US');
-      }
-    } else {
-      this.montoDisplayValue = '';
-    }
+    // Marcar el campo como touched y dirty para activar validaciones
+    this.solicitudPrestamoForm.get('monto')?.markAsTouched();//esto marca el campo como tocado
+    this.solicitudPrestamoForm.get('monto')?.markAsDirty();//esto marca el campo como modificado
     
-    // Recalcular la cuota inicial en tiempo real
+    // Actualizar el valor de visualización con formato sirve para mostrar el monto con comas para miles
+    this.montoDisplayValue = value && !isNaN(numericValue) ? numericValue.toLocaleString('en-US') : '';
+    
+    // Recalcular la cuota inicial inmediatamente
     this.calcularCuotaInicial();
   }
 
   // Método para manejar el cambio del porcentaje
   onPorcentajeChange(event: Event): void {
     const input = event.target as HTMLInputElement;
-    const value = parseFloat(input.value) || 0;
+    let value = input.value;
+    
+    // Convertir a número, si está vacío será 0
+    const numericValue = value ? parseFloat(value) : 0;
     
     // Actualizar el valor del formulario
-    this.solicitudPrestamoForm.get('porcentajeCuotaInicial')?.setValue(value, { emitEvent: false });
+    this.solicitudPrestamoForm.get('porcentajeCuotaInicial')?.setValue(numericValue, { emitEvent: false });
     
-    // Recalcular la cuota inicial en tiempo real con el nuevo valor
-    setTimeout(() => {
-      this.calcularCuotaInicial();
-    }, 0);
+    // Marcar el campo como touched y dirty para activar validaciones
+    this.solicitudPrestamoForm.get('porcentajeCuotaInicial')?.markAsTouched();
+    this.solicitudPrestamoForm.get('porcentajeCuotaInicial')?.markAsDirty();
+    
+    // Recalcular la cuota inicial inmediatamente
+    this.calcularCuotaInicial();
+  }
+
+  // Calcular el monto de la cuota inicial
+  calcularCuotaInicial(): number {
+    const montoControl = this.solicitudPrestamoForm.get('monto');
+    const porcentajeControl = this.solicitudPrestamoForm.get('porcentajeCuotaInicial');
+    
+    const monto = montoControl?.value ? parseFloat(montoControl.value) : 0;
+    const porcentaje = porcentajeControl?.value ? parseFloat(porcentajeControl.value) : 0;
+    console.log('Calculando cuota inicial con monto:', monto, 'y porcentaje:', porcentaje);
+    this.cuotaInicialCalculada = monto * (porcentaje / 100);
+    
+    return this.cuotaInicialCalculada;
   }
 
 }

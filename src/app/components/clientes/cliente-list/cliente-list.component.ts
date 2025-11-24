@@ -20,7 +20,7 @@
 import { Component, OnInit, OnDestroy, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil } from 'rxjs';// RxJS para manejo de streams y cancelación
 
 // Servicios y modelos
 import { ClienteService } from '../../../shared/services/cliente.service';
@@ -358,23 +358,7 @@ export class ClienteListComponent implements OnInit, OnDestroy {
   // ========================================
   // MÉTODOS DE UTILIDAD
   // ========================================
-  
-  /**
-   * Obtiene las iniciales del nombre completo
-   * 
-   * @param nombreCompleto - Nombre completo del cliente
-   * @returns Iniciales en mayúsculas (ej: "JP")
-   */
-  getInitials(nombreCompleto?: string): string {
-    if (!nombreCompleto) return 'SN';
-    
-    const nombres = nombreCompleto.trim().split(' ');
-    if (nombres.length === 1) {
-      return nombres[0][0].toUpperCase();
-    }
-    
-    return (nombres[0][0] + (nombres[1]?.[0] || '')).toUpperCase();
-  }
+
 
   /**
    * Envía el formulario llamando al método onSubmit del componente hijo

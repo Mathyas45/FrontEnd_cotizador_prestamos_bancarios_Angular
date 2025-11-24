@@ -75,6 +75,22 @@ export class SolicitudPrestamosService {
     );
   }
 
+  cotizar(solicitud: SolicitudPrestamoCreateDto): Observable<SolicitudPrestamo> {
+    return this.http
+      .post<SolicitudPrestamo>(
+        `${this.apiUrl}/simular`,
+        solicitud,
+        this.httpOptions
+      )
+      .pipe(
+        catchError((error) => {
+          return throwError(
+            () => new Error(`Error ${error.status}: ${error.message}`)
+          );
+        })
+      );
+  }
+
   create(solicitud: SolicitudPrestamoCreateDto): Observable<SolicitudPrestamo> {
     return this.http
       .post<SolicitudPrestamo>(
