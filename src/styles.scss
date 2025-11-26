@@ -7,16 +7,22 @@ body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
 
 /* Toastr - Estilos para asegurar que se vea correctamente */
 #toast-container {
-  z-index: 999999 !important;
+  z-index: 9999999 !important;
+  position: fixed !important;
   
   > div {
     opacity: 1 !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
   }
   
+  &.toast-top-left {
+    top: 70px !important;
+    left: 270px !important;
+  }
+  
   &.toast-top-right {
-    top: 20px;
-    right: 20px;
+    top: 70px !important;
+    right: 30px !important;
   }
 }
 

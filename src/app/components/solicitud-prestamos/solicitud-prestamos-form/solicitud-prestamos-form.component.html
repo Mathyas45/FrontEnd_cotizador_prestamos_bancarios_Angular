@@ -2,7 +2,7 @@
     <form [formGroup]="solicitudPrestamoForm" (ngSubmit)="onSubmit()">
         <div class="row g-3">
 
-            <!-- Monto del Préstamo -->
+            <!-- Monto toal del nmueble -->
             <div class="col-md-6">
                 <div class="mb-3 m-form__group">
                     <label class="form-label">
@@ -52,7 +52,58 @@
                      </div>   
                 </div>
             </div>
-
+             <!-- Monto del Préstamo -->
+            <div class="col-md-6" *ngIf="soloVer">
+                <div class="mb-3 m-form__group">
+                    <label class="form-label">
+                         Monto a financiar <span class="text-danger"></span>
+                    </label>
+                    <div class="input-group" [class.is-invalid]="isFieldInvalid('monto')">
+                        <span class="input-group-text bg-light-primary"
+                            [class.is-invalid]="isFieldInvalid('monto')">
+                            <i class="fa fa-money-bill txt-primary"></i>
+                        </span>
+                        <input type="text" class="form-control" 
+                            formControlName="montoFinanciar"
+                            title="Ingrese el monto del inmueble">
+                    </div>
+                    <div *ngIf="isFieldInvalid('monto')" class="invalid-feedback d-block">
+                        {{ getErrorMessage('monto') }}
+                    </div>
+                </div>
+            </div>
+            <!-- tasaInteres -->
+                <div class="col-md-6" *ngIf="soloVer">
+                    <div class="mb-3 m-form__group">
+                        <label class="form-label">
+                            Tasa de interés anual (%) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group" [class.is-invalid]="isFieldInvalid('tasaInteres')">
+                            <span class="input-group-text bg-light-secondary"
+                                [class.is-invalid]="isFieldInvalid('tasaInteres')">
+                                <i class="fa fa-percentage txt-secondary"></i>
+                            </span>
+                            <input type="number" class="form-control" formControlName="tasaInteres" placeholder="7.5"
+                                [class.is-invalid]="isFieldInvalid('tasaInteres')">
+                        </div>
+                    </div>
+                </div>
+            <!-- tcea -->
+            <div class="col-md-6" *ngIf="soloVer">
+                <div class="mb-3 m-form__group">
+                    <label class="form-label">
+                        TCEA (%) <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group" [class.is-invalid]="isFieldInvalid('tcea')">
+                        <span class="input-group-text bg-light-secondary"
+                            [class.is-invalid]="isFieldInvalid('tcea')">
+                            <i class="fa fa-percentage txt-secondary"></i>
+                        </span>
+                        <input type="number" class="form-control" formControlName="tcea" placeholder="8.0"
+                            [class.is-invalid]="isFieldInvalid('tcea')">
+                    </div>
+                </div>
+            </div>
               <!-- Plazo en Meses -->
             <div class="col-md-6">
                 <div class="mb-3 m-form__group">
@@ -77,6 +128,10 @@
                 <div class="mb-3 m-form__group position-relative">
                     <label class="form-label">
                         Cliente <span class="text-danger">*</span>
+                        <i class="fa fa-plus-circle text-primary" aria-hidden="true" 
+                           style="cursor: pointer; margin-left: 10px; font-size: 1.2rem;" 
+                           title="Agregar nuevo cliente" 
+                           (click)="showModalCliente = true"></i>
                     </label>
                     
                     <!-- Input de búsqueda -->
@@ -116,4 +171,41 @@
             </div>
         </div>
     </form>
+</div>
+
+
+<!-- ========================================
+     MODAL DEL FORMULARIO DE NUEVO CLIENTE
+        ======================================== -->
+<div *ngIf="showModalCliente" class="modal fade show d-block" tabindex="-1" style="background-color: rgba(0, 0, 0, 0.5);">
+
+  <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable" (click)="$event.stopPropagation()">
+        <div class="modal-content">
+            <!-- Header del Modal -->
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    Crear Nuevo Cliente
+                </h5>
+                <button type="button" class="btn-close" (click)="closeModal()">
+                </button>
+            </div>
+            <!-- Formulario -->
+            <div class="modal-body">
+                <app-cliente-form #clienteFormComponent
+                    [isModal]="true" (onSaved)="onSolicitudSaved()" (onCancelEvent)="closeModal()">
+                </app-cliente-form>
+            </div>
+            <!-- Footer del Modal -->
+            <div class="modal-footer">
+                <button type="button" class="btn text-white" (click)="closeModal()"
+                    style="background-color: #4d4d55; border-color: #4d4d55;">
+                    Cancelar
+                </button>
+                <button type="button" class="btn btn-primary text-white" (click)="submitForm()"
+                    [disabled]="isFormInvalid() || isFormSubmitting()">
+                   Crear Cliente
+                </button>
+            </div>
+        </div>
+    </div>
 </div>

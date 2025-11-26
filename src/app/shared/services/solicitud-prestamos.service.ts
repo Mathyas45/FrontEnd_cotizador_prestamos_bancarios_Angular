@@ -4,8 +4,8 @@ import {
   HttpHeaders,
   HttpErrorResponse,
 } from "@angular/common/http"; //esto es para hacer peticiones http
-import { Observable, throwError } from "rxjs"; //esto es para manejar las respuestas de las peticiones http
-import { catchError, map } from "rxjs/operators"; //esto es para manejar los errores y transformar las respuestas
+import { Observable, throwError, Subject } from "rxjs"; //esto es para manejar las respuestas de las peticiones http
+import { catchError, map, tap } from "rxjs/operators"; //esto es para manejar los errores y transformar las respuestas
 
 // Importamos los modelos que creamos
 import {

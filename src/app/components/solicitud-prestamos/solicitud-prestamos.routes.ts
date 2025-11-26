@@ -41,8 +41,8 @@ export const solicitudPrestamos: Routes = [
         path: 'nueva-cotizacion',
         component: SolicitudPrestamosNuevaCotizacionComponent,
         data: {
-            title: 'Nueva Cotización de Préstamo',
-            breadcrumb: 'Nueva Cotización de Préstamo'
+            title: 'Simulador de crédito hipotecario',
+            breadcrumb: 'Simulador de crédito hipotecario'
         }
     }
 ];

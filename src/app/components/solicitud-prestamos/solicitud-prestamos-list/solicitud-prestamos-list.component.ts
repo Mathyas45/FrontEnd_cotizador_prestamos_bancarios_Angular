@@ -58,6 +58,7 @@ export class SolicitudPrestamosListComponent implements OnInit, OnDestroy {
   errorMessage: string = '';
   isLoading: boolean = false;
   hasError: boolean = false;
+  soloVer : boolean = false;
 
   // Para manejar la destrucción del componente y evitar fugas de memoria
   private destroy$ = new Subject<void>();
@@ -137,6 +138,7 @@ export class SolicitudPrestamosListComponent implements OnInit, OnDestroy {
      // Filtrar por múltiples campos
     this.solicitudPrestamosFiltrados = this.solicitudPrestamos.filter(sp =>
       (sp.cliente && sp.cliente.nombreCompleto.toLowerCase().includes(term)) ||
+      (sp.cliente && sp.cliente.documentoIdentidad.toLowerCase().includes(term)) ||
       (sp.estado && sp.estado.toString().includes(term)) ||
       (sp.monto !== undefined && sp.monto.toString().includes(term))
     );
@@ -153,6 +155,7 @@ export class SolicitudPrestamosListComponent implements OnInit, OnDestroy {
   closeModal(): void {
     this.showModal = false;
     this.selectedSolicitudId = null;
+    this.soloVer = false; // Resetear soloVer al cerrar el modal
   }
 
   // ========================================
@@ -186,6 +189,7 @@ export class SolicitudPrestamosListComponent implements OnInit, OnDestroy {
 
   openCreateModal(): void {
     this.selectedSolicitudId = null;
+    this.soloVer = false; // Resetear soloVer al crear
     this.showModal = true;
   }
   openNuevaPestanaCotizacion(): void {
@@ -194,8 +198,15 @@ export class SolicitudPrestamosListComponent implements OnInit, OnDestroy {
 
   openEditModal(id: number): void {
     this.selectedSolicitudId = id;
+    this.soloVer = false; // Resetear soloVer al editar
     this.showModal = true;
   }
+
+  openViewModal(id: number): void {
+    this.selectedSolicitudId = id;
+    this.showModal = true;
+    this.soloVer = true;
+    }
 
   onSolicitudSaved(): void {
     this.closeModal();

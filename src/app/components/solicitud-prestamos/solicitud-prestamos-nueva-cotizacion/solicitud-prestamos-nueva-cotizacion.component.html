@@ -1,28 +1,40 @@
 <div class="container-fluid">
   <div class="flex flex-wrap gap-4 mb-4">
     <!-- //boton para volver atrás -->
-    <!-- <button class="btn btn-secondary text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors">
+    <button (click)="goBack()" class="btn btn text-white px-4 py-2 rounded-lg flex items-center gap-2 transition-colors" style="background-color: #4d4d55; border-color: #4d4d55;">
       <i class="feather icon-arrow-left"></i>
       Volver
-    </button> -->
+    </button> 
     <div class="flex-1 min-w-[300px]">
-      <app-card [headerTitle]="'Datos para la solicitud de préstamo'" [headerClass]="'border-b pb-3'">
+      <app-card [headerTitle]="'Datos para la solicitud de crédito'" [headerClass]="'border-b pb-3'">
         <!-- Slot del contenido de la tarjeta -->
         <div class="">
           <div>
             <h6>
-              Complete los datos para la solicitud de préstamo
+              Complete los datos para cotizar su préstamo
             </h6>
             <!-- Formulario -->
-            <app-solicitudPrestamos-form #SolicitudPrestamosFormComponent (onSaved)="onSolicitudCotizada($event)">
+            <app-solicitudPrestamos-form 
+              #SolicitudPrestamosFormComponent 
+              (onCotizada)="onSolicitudCotizada($event)"
+              (onSaved)="onSolicitudGuardada($event)">
             </app-solicitudPrestamos-form>
 
             <!-- Footer del Modal -->
             <div class="flex justify-center">
-              <button type="button" class="btn btn-primary text-white" (click)="submitForm()"
+              <button type="button" class="btn btn-outline-primary border-primary" (click)="cotizarSolicitud()"
                 [disabled]="isFormInvalid() || isFormSubmitting()">
-                <i class="fa fa-save me-1"></i>
-                Crear Solicitud de Préstamo
+                <i class="fa fa-calculator me-2"></i>
+                Cotizar Préstamo
+              </button>
+            </div>
+            <hr>
+              <div class="flex justify-center">
+                <button class="btn p-3 mt-5 text-white" (click)="guardarSolicitud()"
+                [disabled]="isFormInvalid() || isFormSubmitting() || !solicitudCotizada"
+                style="background-color: #4d4d55 !important;  border-color: #4d4d55 !important;">
+                <i class="fa fa-check-circle me-2"></i>
+                Guardar Préstamo
               </button>
             </div>
           </div>
@@ -34,7 +46,7 @@
       <app-card [headerTitle]="'Datos del Préstamo Cotizado'" [headerClass]="'border-b pb-3'">
         <!-- Mensaje cuando no hay cotización -->
         <div *ngIf="!solicitudCotizada" class="text-center py-8">
-          <i class="feather icon-info text-gray-400" style="font-size: 3rem;"></i>
+          <i class="fa fa-info text-gray-400" style="font-size: 3rem;"></i>
           <p class="text-gray-500 mt-3">
             Complete el formulario y haga clic en "Crear Solicitud de Préstamo" para ver la cotización.
           </p>
@@ -68,10 +80,9 @@
               <label class="text-sm font-semibold text-gray-600">Tasa de Interés:</label>
               <p class="text-lg font-bold text-gray-900">{{ solicitudCotizada.tasaInteres }}% anual</p>
             </div>
-            
-            
+
           </div>
-          
+
           <!-- Cliente -->
           <div class="bg-gray-50 p-2 rounded-lg" *ngIf="solicitudCotizada.cliente">
             <label class="text-sm font-semibold text-gray-600">Cliente:</label>
@@ -80,7 +91,7 @@
           
           <!-- Estado -->
           <div class="bg-gray-50 p-2 rounded-lg">
-            <label class="text-sm font-semibold text-gray-600">Estado:</label>
+            <label class="text-sm font-semibold text-gray-600">Estado de verificación:</label>
             <span class="inline-block px-3 py-1 rounded-full text-sm font-semibold"
                   [ngClass]="{
                     'bg-yellow-100 text-yellow-800': solicitudCotizada.estado === 2,
@@ -90,10 +101,16 @@
               {{ solicitudCotizada.estado === 1 ? 'Aprobada' : solicitudCotizada.estado === 0 ? 'Rechazada' : 'Pendiente' }}
             </span>
           </div>
-          <div class="bg-primary p-2 rounded-lg border-2 border-blue-200">
-              <label class="text-sm font-semibold text-white">Cuota Mensual:</label>
-              <p class="text-xl font-bold text-white">S/ {{ solicitudCotizada.cuotaMensual | number:'1.2-2' }}</p>
-            </div>
+          <div class="bg-gray-50 p-2 rounded-lg border-2 border-primary">
+              <label class="text-sm font-semibold text-gray-600">Cuota Mensual:</label>
+              <p class="text-xl font-bold text-gray-900">S/ {{ solicitudCotizada.cuotaMensual | number:'1.2-2' }}</p>
+          </div>
+          <div *ngIf="solicitudCotizada" class="text-center py-4">
+            <p class="text-gray-500">
+              Si esta de acuerdo con la cotización, haga clic en "Guardar Préstamo" para crear la solicitud.
+            </p>
+          </div>
+            
         </div>
       </app-card>
     </div>

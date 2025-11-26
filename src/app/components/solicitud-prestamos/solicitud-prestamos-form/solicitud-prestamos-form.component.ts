@@ -8,6 +8,7 @@ import {
   EventEmitter,
   OnChanges,
   SimpleChanges,
+  ViewChild,
 } from "@angular/core";
 import { SolicitudPrestamo, SolicitudPrestamoCreateDto, SolicitudPrestamoUpdateDto } from "../../../shared/interface/solicitud-prestamos.model";
 import {
@@ -26,6 +27,8 @@ import { FormsModule } from '@angular/forms';
 import { Cliente } from '../../../shared/interface/cliente.model';
 import { ClienteService } from '../../../shared/services/cliente.service';
 import { CurrencyFormatPipe } from '../../../shared/pipes/currency-format.pipe';
+// Componente del formulario (para usar en modal)
+import { ClienteFormComponent } from '../../clientes/cliente-form/cliente-form.component';
 
 @Component({
   selector: "app-solicitudPrestamos-form", //esto es para usar el componente en el html
@@ -34,7 +37,8 @@ import { CurrencyFormatPipe } from '../../../shared/pipes/currency-format.pipe';
     CommonModule,
     ReactiveFormsModule, // Para formularios reactivos
     FormsModule, // Para ngModel en búsqueda es decir formularios template-driven que son más simples sirve para casos sencillos
-    CurrencyFormatPipe// Para formatear moneda
+    CurrencyFormatPipe,// Para formatear moneda
+    ClienteFormComponent // Formulario en modal
   ],
   templateUrl: "./solicitud-prestamos-form.component.html",
   styleUrls: ["./solicitud-prestamos-form.component.scss"], // Corregido a styleUrls
@@ -45,7 +49,9 @@ export class SolicitudPrestamosFormComponent
   @Input() solicitudId: number | null = null; //esto es para recibir el id de la solicitud de prestamo que se va a editar
   @Input() isModal: boolean = false; // Indica si el formulario se muestra en un modal
   @Input() isVisible: boolean = false;
+  @Input() soloVer : boolean = false
   @Output() onSaved = new EventEmitter<SolicitudPrestamo>(); //esto es para emitir un evento cuando se guarda la solicitud de prestamo
+  @Output() onCotizada = new EventEmitter<SolicitudPrestamo>(); //esto es para emitir un evento cuando se cotiza la solicitud
   /**
    * Evento que se emite cuando se cancela
    */
@@ -67,6 +73,12 @@ export class SolicitudPrestamosFormComponent
   // Para el formato visual del monto
   montoDisplayValue: string = ''; // Valor formateado para mostrar
   cuotaInicialCalculada: number = 0; // Cuota inicial calculada
+
+
+  //CLIENTES MODAL FORM
+  showModalCliente: boolean = false;
+  @ViewChild('clienteFormComponent') clienteFormComponent!: ClienteFormComponent;
+
 
   private destroy$ = new Subject<void>(); //esto es para manejar la destrucción de suscripciones
 
@@ -120,6 +132,9 @@ export class SolicitudPrestamosFormComponent
   buildForm(): void {// Crear el formulario con validaciones
     this.solicitudPrestamoForm = this.fb.group({
       monto: ["", [Validators.required, Validators.min(1)]],
+      montoFinanciar:  ["", [Validators.min(1)]], // Eliminado Validators.required
+      tasaInteres :  ["", [Validators.min(0)]], // Eliminado Validators.required
+      tcea :  ["", [Validators.min(0)]], // Eliminado Validators.required
       porcentajeCuotaInicial: [
         "",
         [Validators.required, Validators.min(0), Validators.max(100)],
@@ -138,15 +153,30 @@ export class SolicitudPrestamosFormComponent
       .subscribe({
         next: (solicitudPrestamo: SolicitudPrestamo) => {
           if (solicitudPrestamo) {
-            console.log('cliente seleccionado:', solicitudPrestamo.cliente.id);
-            
-            // Asignar valores al formulario
+            console.log('datos de la solicitud prestamo cargados:', solicitudPrestamo);
+          
             const montoValue = Number(solicitudPrestamo.monto) || 0;
-            this.solicitudPrestamoForm.patchValue({
+            const clienteId = solicitudPrestamo.cliente?.id || null;
+            if(this.soloVer){
+               this.solicitudPrestamoForm.patchValue({//pachvalue es para asignar valores al formulario sin resetear todo
+              monto: montoValue,
+              porcentajeCuotaInicial: solicitudPrestamo.porcentajeCuotaInicial || 0,
+              cuotaInicial : solicitudPrestamo.montoCuotaInicial,
+              montoFinanciar : solicitudPrestamo.montoFinanciar,
+              plazoAnios: solicitudPrestamo.plazoAnios || 0,
+              tcea : solicitudPrestamo.tcea,
+              tasaInteres : solicitudPrestamo.tasaInteres,
+              clienteId: clienteId,
+            });
+
+
+            }
+            // Asignar valores al formulario
+            this.solicitudPrestamoForm.patchValue({//pachvalue es para asignar valores al formulario sin resetear todo
               monto: montoValue,
               porcentajeCuotaInicial: solicitudPrestamo.porcentajeCuotaInicial || 0,
               plazoAnios: solicitudPrestamo.plazoAnios || 0,
-              clienteId: solicitudPrestamo.cliente?.id || null,
+              clienteId: clienteId,
             });
             
             // Formatear el monto para visualización
@@ -253,30 +283,30 @@ export class SolicitudPrestamosFormComponent
         next: (solicitudPrestamo) => {
           //imprimir los datos de la solicitud cotizada en consola
           console.log('Solicitud cotizada:', solicitudPrestamo);
-          this.onSaved.emit(solicitudPrestamo);//emitir hacia el componente padre
+          this.onCotizada.emit(solicitudPrestamo);//emitir hacia el componente padre cuando SOLO SE COTIZA
           this.isSubmitting = false;
         },
         error: (error: HttpErrorResponse) => {
-          this.toastr.error('Error al crear la solicitud: ' + error.message, 'Error');
+          this.toastr.error('Error al cotizar la solicitud: ' + error.message, 'Error');
           this.isSubmitting = false;
         }
       });
-  }
-
-
-
-  crearSolicitudPrestamo(): void {
-    this.isSubmitting = true;
-    const nuevaSolicitud : SolicitudPrestamoCreateDto = this.solicitudPrestamoForm.value;
-
-    this.solicitudPrestamosService.create(nuevaSolicitud)
+    }
+    
+    
+    
+    crearSolicitudPrestamo(): void {
+      this.isSubmitting = true;
+      const nuevaSolicitud : SolicitudPrestamoCreateDto = this.solicitudPrestamoForm.value;
+      
+      this.solicitudPrestamosService.create(nuevaSolicitud)
       .pipe(takeUntil(this.destroy$))//esto es para manejar la destrucción de suscripciones, pipe es como un middleware que procesa los datos antes de llegar al suscriptor es dcir a la función que maneja la respuesta
       .subscribe({
         next: (solicitudPrestamo) => {
           this.toastr.success('Solicitud creada exitosamente.', 'Éxito');
-          this.onSaved.emit(solicitudPrestamo);
+          this.onSaved.emit(solicitudPrestamo);//emitir hacia el componente padre cuando se GUARDA
           this.isSubmitting = false;
-           // Resetear formulario
+          // Resetear formulario
           this.resetForm();
         },
         error: (error: HttpErrorResponse) => {
@@ -413,8 +443,10 @@ export class SolicitudPrestamosFormComponent
     // Actualizar el valor de visualización con formato sirve para mostrar el monto con comas para miles
     this.montoDisplayValue = value && !isNaN(numericValue) ? numericValue.toLocaleString('en-US') : '';
     
-    // Recalcular la cuota inicial inmediatamente
-    this.calcularCuotaInicial();
+    // Recalcular la cuota inicial inmediatamente usando setTimeout para asegurar actualización
+    setTimeout(() => {
+      this.calcularCuotaInicial();
+    }, 0);
   }
 
   // Método para manejar el cambio del porcentaje
@@ -432,21 +464,67 @@ export class SolicitudPrestamosFormComponent
     this.solicitudPrestamoForm.get('porcentajeCuotaInicial')?.markAsTouched();
     this.solicitudPrestamoForm.get('porcentajeCuotaInicial')?.markAsDirty();
     
-    // Recalcular la cuota inicial inmediatamente
-    this.calcularCuotaInicial();
+    // Recalcular la cuota inicial inmediatamente usando setTimeout para asegurar actualización
+    setTimeout(() => {
+      this.calcularCuotaInicial();
+    }, 0);
   }
 
   // Calcular el monto de la cuota inicial
-  calcularCuotaInicial(): number {
+  calcularCuotaInicial(): void {
     const montoControl = this.solicitudPrestamoForm.get('monto');
     const porcentajeControl = this.solicitudPrestamoForm.get('porcentajeCuotaInicial');
     
-    const monto = montoControl?.value ? parseFloat(montoControl.value) : 0;
-    const porcentaje = porcentajeControl?.value ? parseFloat(porcentajeControl.value) : 0;
-    console.log('Calculando cuota inicial con monto:', monto, 'y porcentaje:', porcentaje);
-    this.cuotaInicialCalculada = monto * (porcentaje / 100);
+    const monto = montoControl?.value ? parseFloat(String(montoControl.value)) : 0;
+    const porcentaje = porcentajeControl?.value ? parseFloat(String(porcentajeControl.value)) : 0;
     
-    return this.cuotaInicialCalculada;
+    // Calcular y forzar actualización
+    const nuevaCuota = monto * (porcentaje / 100);
+    console.log('Calculando cuota inicial con monto:', monto, 'y porcentaje:', porcentaje, '= ', nuevaCuota);
+    
+    // Forzar la actualización de la propiedad
+    this.cuotaInicialCalculada = nuevaCuota;
+  }
+
+
+ // ========================================
+  // MÉTODOS DE UTILIDAD de FORMULARIO DE CLIENTE
+  // ========================================
+
+
+  /**
+   * Envía el formulario llamando al método onSubmit del componente hijo
+   */
+  submitForm(): void {
+    if (this.clienteFormComponent) {
+      this.clienteFormComponent.onSubmit();
+    }else {
+      console.error('El componente del formulario no está disponible.');
+    }
+  }
+
+  /**
+   * Verifica si el formulario es inválido
+   */
+  isFormInvalid(): boolean {
+    return this.clienteFormComponent?.clienteForm?.invalid || false;
+  }
+
+  /**
+   * Verifica si el formulario está enviando datos
+   */
+  isFormSubmitting(): boolean {
+    return this.clienteFormComponent?.isSubmitting || false;
+  }
+   closeModal(): void {
+     this.showModalCliente = false;
+  }
+
+  onSolicitudSaved(): void {
+    this.showModalCliente = false;
+    // Recargar la lista de clientes desde el backend para incluir el nuevo cliente
+    this.loadClientes();
+    this.toastr.success('Cliente creado exitosamente', 'Éxito');
   }
 
 }

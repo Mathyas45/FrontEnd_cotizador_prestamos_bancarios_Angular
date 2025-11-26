@@ -159,7 +159,7 @@ export class ClienteListComponent implements OnInit, OnDestroy {
   
   /**
    * Se ejecuta al destruir el componente
-   * Equivalente a onUnmounted() en Vue
+   * Equivalente a onUnmounted() en Vue nos sirve para limpiar recursos
    * 
    * Cancela todas las suscripciones para evitar memory leaks
    */

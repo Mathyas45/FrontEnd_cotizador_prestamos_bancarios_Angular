@@ -32,7 +32,7 @@
           </button>
           <!-- Botón Crear Solicitud -->
           <button (click)="openCreateModal()"
-            class="btn btn-primary text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors">
+            class="btn  text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors" style="background-color: #4d4d55; border-color: #4d4d55;">
             <i class="feather icon-plus"></i>
             Crear Solicitud de Préstamo
           </button>
@@ -157,15 +157,19 @@
               <td>{{ solicitud.createdAt | date: 'dd/MM/yyyy' }}</td>
               <td>
                 <span [class]="'badge ' + getEstadoClass(solicitud.estado)">
-                  {{ solicitud.estado === 1 ? 'Activo' : 'Inactivo' }}
+                  {{ solicitud.estado === 1 ? 'Aprobado' : 'Rechazado' }}
                 </span>
               </td>
               <td>
-                <button *ngIf="solicitud.id" (click)="openEditModal(solicitud.id)" title="Editar"
+                <button *ngIf="solicitud.id" (click)="openViewModal(solicitud.id)" title="Ver" type="button"
+                  class="btn btn-sm text-white me-1" style="background-color: #4d4d55; border-color: #4d4d55;">
+                  <i class="fa fa-eye"></i>
+                </button>
+                <button *ngIf="solicitud.id && solicitud.estado != 0" (click)="openEditModal(solicitud.id)" title="Editar"
                   class="btn btn-sm btn-primary text-white me-1">
                   <i class="fa fa-edit"></i>
                 </button>
-                <button *ngIf="solicitud.id" (click)="deleteSolicitud(solicitud.cliente.nombreCompleto, solicitud.id)" title="Eliminar"
+                <button *ngIf="solicitud.id && solicitud.estado != 0" (click)="deleteSolicitud(solicitud.cliente.nombreCompleto, solicitud.id)" title="Eliminar"
                   class="btn btn-sm btn-outline-primary border-primary">
                   <i class="feather icon-trash"></i>
                 </button>
@@ -209,7 +213,9 @@
       <!-- Header del Modal -->
       <div class="modal-header">
         <h5 class="modal-title">
-          {{ selectedSolicitudId ? 'Editar Solicitud de Préstamo' : 'Crear Nueva Solicitud de Préstamo' }}
+          {{ selectedSolicitudId && soloVer != true ? 'Editar Solicitud de Préstamo' : '' }}
+           {{!selectedSolicitudId && soloVer != true ? 'Crear Nueva Solicitud de Préstamo' : '' }}
+          {{ soloVer ? 'Ver Solicitud de Préstamo' : '' }}
         </h5>
         <button type="button" class="btn-close" (click)="closeModal()">
         </button>
@@ -217,17 +223,18 @@
 
       <!-- Formulario -->
       <div class="modal-body">
-        <app-solicitudPrestamos-form #SolicitudPrestamosFormComponent [solicitudId]="selectedSolicitudId"
+        <app-solicitudPrestamos-form #SolicitudPrestamosFormComponent [solicitudId]="selectedSolicitudId" [soloVer]="soloVer"
           [isModal]="true" (onSaved)="onSolicitudSaved()" (onCancelEvent)="closeModal()">
         </app-solicitudPrestamos-form>
       </div>
 
       <!-- Footer del Modal -->
       <div class="modal-footer">
-        <button type="button" class="btn btn-light" (click)="closeModal()">
-          Cancelar
+        <button type="button" class="btn text-white" (click)="closeModal()" style="background-color: #4d4d55; border-color: #4d4d55;">
+          {{soloVer ? 'Aceptar' : '' }}
+          {{!soloVer ? 'Cancelar' : '' }}
         </button>
-        <button type="button" class="btn btn-primary text-white" (click)="submitForm()" [disabled]="isFormInvalid() || isFormSubmitting()">
+        <button *ngIf="!soloVer" type="button" class="btn btn-primary text-white" (click)="submitForm()" [disabled]="isFormInvalid() || isFormSubmitting()">
           <i class="fa fa-save me-1"></i>
           {{ selectedSolicitudId ? 'Actualizar Solicitud de Préstamo' : 'Crear Solicitud de Préstamo' }}
         </button>
