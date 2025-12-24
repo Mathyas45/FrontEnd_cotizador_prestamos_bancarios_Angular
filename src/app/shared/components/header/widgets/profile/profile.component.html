@@ -1,9 +1,9 @@
 <div class="flex profile-media items-center">
     <img class="-[10px]" src="assets/images/dashboard/profile.png" alt="profile">
     <div class="grow w-[calc(100%_-_250px)]">
-        <span>Emay Walter</span>
+        <span>{{ username }}</span>
         <p class="mb-0">
-            Admin
+            {{  role }}
             <i class="align-middle fa-solid fa-angle-down"></i>
         </p>
     </div>
@@ -18,9 +18,9 @@
         </li>
     }
     <li>
-        <a class="flex items-center" href="javascript:void(0)">
+        <a class="flex items-center" href="javascript:void(0)" (click)="logout()">
             <app-feather-icon [icon]="'log-in'"></app-feather-icon>
-            <span>Log out</span>
+            <span>Cerrar Sesión</span>
         </a>
     </li>
   </ul>

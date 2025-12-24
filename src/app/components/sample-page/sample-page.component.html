@@ -11,3 +11,42 @@
       </div>
     </div>
 </div>
+
+<div class="no-permissions-container">
+  <h1 class="no-permissions-title">Acceso Restringido</h1>
+  <p class="no-permissions-message">
+    No tienes permisos asignados para acceder a esta página. Por favor, contacta con el soporte técnico o tu gerente para obtener más información.
+  </p>
+  <div class="no-permissions-icon">
+    <i class="fa fa-lock" aria-hidden="true"></i>
+  </div>
+</div>
+
+<style>
+  .no-permissions-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    text-align: center;
+    background-color: #f8f9fa;
+    color: #343a40;
+  }
+
+  .no-permissions-title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+  }
+
+  .no-permissions-message {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+  }
+
+  .no-permissions-icon {
+    font-size: 4rem;
+    color: #6c757d;
+  }
+</style>

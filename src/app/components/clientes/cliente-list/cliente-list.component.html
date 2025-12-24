@@ -42,8 +42,9 @@
             </p>
           </div>
 
-          <!-- Botón Crear Cliente -->
+          <!-- Botón Crear Cliente - Solo visible si tiene permiso CREATE_CLIENTS -->
           <button 
+            *hasPermission="'CREATE_CLIENTS'"
             (click)="openCreateModal()"
             class="btn bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition-colors">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -201,17 +202,19 @@
                 <td class="text-center">
                   <div class="d-flex gap-2 justify-content-center">
                     
-                    <!-- Botón Editar -->
+                    <!-- Botón Editar - Solo visible si tiene permiso UPDATE_CLIENTS -->
                     <button
-                      *ngIf="cliente.id"
-                      (click)="openEditModal(cliente.id)"
+                      *hasPermission="'UPDATE_CLIENTS'"
+                      [attr.data-id]="cliente.id"
+                      (click)="cliente.id && openEditModal(cliente.id)"
                       title="Editar cliente"
                       class="btn btn-sm btn-primary">
                       <i class="fa fa-edit"></i>
                     </button>
 
-                    <!-- Botón Eliminar -->
+                    <!-- Botón Eliminar - Solo visible si tiene permiso DELETE_CLIENTS -->
                     <button
+                      *hasPermission="'DELETE_CLIENTS'"
                       (click)="deleteCliente(cliente)"
                       title="Eliminar cliente"
                       class="btn btn-sm btn-danger">
@@ -235,7 +238,7 @@
                       {{ searchTerm ? 'No se encontraron resultados para "' + searchTerm + '"' : 'Aún no has agregado clientes' }}
                     </p>
                     <button 
-                      *ngIf="!searchTerm"
+                      *hasPermission="'CREATE_CLIENTS'"
                       (click)="openCreateModal()"
                       class="btn btn-primary">
                       Crear Primer Cliente

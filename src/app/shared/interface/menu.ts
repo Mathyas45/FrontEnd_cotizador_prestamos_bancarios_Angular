@@ -13,4 +13,8 @@ export interface Menu {
     children?: Menu[];
     pined?: boolean;
     id?: string;
+    // Nuevos campos para sistema de permisos RBAC
+    permissions?: string[];        // Permisos requeridos para ver este ítem
+    permissionMode?: 'all' | 'any'; // 'all' = todos los permisos, 'any' = al menos uno
+    roles?: string[];              // Roles requeridos (alternativa a permisos)
 }

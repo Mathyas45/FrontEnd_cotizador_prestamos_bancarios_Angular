@@ -38,6 +38,10 @@ import { CardComponent } from '../../../shared/components/ui/card/card.component
 // Componente del formulario (para usar en modal)
 import { ClienteFormComponent } from '../cliente-form/cliente-form.component';
 
+// Directivas de permisos RBAC
+import { HasPermissionDirective } from '../../../shared/directives/has-permission.directive';
+import { Permission } from '../../../shared/services/permission.service';
+
 /**
  * @Component: Decorador que define un componente Angular
  * - selector: Nombre del tag HTML para usar este componente
@@ -52,12 +56,23 @@ import { ClienteFormComponent } from '../cliente-form/cliente-form.component';
     CommonModule,           // Directivas básicas: *ngIf, *ngFor, pipes, etc.
     FormsModule,            // Para ngModel (búsqueda)
     CardComponent,          // Componente de tarjeta de la plantilla
-    ClienteFormComponent    // Formulario en modal
+    ClienteFormComponent,   // Formulario en modal
+    HasPermissionDirective  // Directiva para control de permisos
   ],
   templateUrl: './cliente-list.component.html',
   styleUrl: './cliente-list.component.scss'
 })
 export class ClienteListComponent implements OnInit, OnDestroy {
+
+  // ========================================
+  // CONSTANTES DE PERMISOS (para usar en template)
+  // ========================================
+  
+  /**
+   * Exponemos los permisos para usarlos en el HTML
+   * Ejemplo: *hasPermission="Permission.CREATE_CLIENTS"
+   */
+  readonly Permission = Permission;
 
   // ========================================
   // VIEWCHILD - REFERENCIA AL FORMULARIO

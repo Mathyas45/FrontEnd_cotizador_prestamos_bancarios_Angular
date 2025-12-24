@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="grid grid-cols-12">
+      <div class="col-span-7 xl:col-span-12 order-1" [ngStyle]="{ 'background-image': 'url(assets/images/login/unnamed.jpg)', 'height': '720px' }">
+        <img class="bg-img-cover bg-center" src="assets/images/login/unnamed.jpg" alt="image" style="height: 100%;  width: 100%;">
+      </div>
+      <div class="col-span-5 xl:col-span-12">
+        <div class="login-card login-dark">
+          <div>
+            <div>
+              <a class="logo !text-start" href="javascript:void(0)" [routerLink]="['/']">
+                <img class="max-w-full h-20 for-light" src="assets/images/login/logo1.png" alt="logo">
+                <img class="max-w-full h-20 for-dark" src="assets/images/login/logo1.png" alt="logo">
+              </a>
+            </div>
+            <div class="login-main"> 
+              <app-login-form [path]="'/auth/register-bg-image'"></app-login-form>
+            </div>
+          </div>
+        </div>
+      </div>
+  </div>
+</div>

@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { NavigationEnd, Router, RouterModule } from '@angular/router';
 import { TranslatePipe } from '@ngx-translate/core';
+import { Subscription } from 'rxjs';
 
 import { LogoComponent } from "../header/widgets/logo/logo.component";
 import { FeatherIconComponent } from "../ui/feather-icon/feather-icon.component";
 import { SvgIconComponent } from "../ui/svg-icon/svg-icon.component";
-import { items, menuItems } from '../../data/menu';
 import { Menu } from '../../interface/menu';
 import { LayoutService } from '../../services/layout.service';
+import { MenuService } from '../../services/menu.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,41 +19,62 @@ import { LayoutService } from '../../services/layout.service';
   styleUrl: './sidebar.component.scss'
 })
 
-export class SidebarComponent {
+export class SidebarComponent implements OnInit, OnDestroy {
 
-  public menuItems = menuItems;
-  public items = items;
+  public menuItems: Menu[] = [];
   public leftArrow: boolean = false;
   public rightArrow: boolean = true;
   public pinedItem: Menu[] = [];
-
-  constructor(private router: Router, public layoutService: LayoutService) {
-    this.items.subscribe(menuItems => {
-      this.menuItems = menuItems;
-      this.router.events.subscribe((event) => {
-        if (event instanceof NavigationEnd) {
-          const urlTree = this.router.parseUrl(event.url);
-          const cleanPath = '/' + urlTree.root.children['primary']?.segments.map(segment => segment.path).join('/');
   
-          menuItems.filter(items => {
-            if (items.path === cleanPath) {
-              this.setNavActive(items);
+  private menuSubscription?: Subscription;
+  private routerSubscription?: Subscription;
+
+  constructor(
+    private router: Router, 
+    public layoutService: LayoutService,
+    private menuService: MenuService
+  ) {}
+
+  ngOnInit(): void {
+    // Suscribirse al menú dinámico filtrado por permisos
+    this.menuSubscription = this.menuService.menu$.subscribe(menuItems => {
+      this.menuItems = menuItems;
+      this.setupRouterEvents();
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.menuSubscription?.unsubscribe();
+    this.routerSubscription?.unsubscribe();
+  }
+
+  private setupRouterEvents(): void {
+    // Limpiar suscripción anterior si existe
+    this.routerSubscription?.unsubscribe();
+    
+    this.routerSubscription = this.router.events.subscribe((event) => {
+      if (event instanceof NavigationEnd) {
+        const urlTree = this.router.parseUrl(event.url);
+        const cleanPath = '/' + urlTree.root.children['primary']?.segments.map(segment => segment.path).join('/');
+
+        this.menuItems.filter(items => {
+          if (items.path === cleanPath) {
+            this.setNavActive(items);
+          }
+          if (!items.children) { return false; }
+          items.children.filter(subItems => {
+            if (subItems.path === cleanPath) {
+              this.setNavActive(subItems);
             }
-            if (!items.children) { return false; }
-            items.children.filter(subItems => {
-              if (subItems.path === cleanPath) {
-                this.setNavActive(subItems);
+            if (!subItems.children) { return false; }
+            subItems.children.filter(subSubItems => {
+              if (subSubItems.path === cleanPath) {
+                this.setNavActive(subSubItems);
               }
-              if (!subItems.children) { return false; }
-              subItems.children.filter(subSubItems => {
-                if (subSubItems.path === cleanPath) {
-                  this.setNavActive(subSubItems);
-                }
-              });
             });
           });
-        }
-      });
+        });
+      }
     });
   }  
 
